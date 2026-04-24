@@ -2,7 +2,7 @@ name: Daily AI Report
 
 on:
   schedule:
-    - cron: "30 0 * * *"
+    - cron: "0 23 * * *"
   workflow_dispatch:
     inputs:
       target_date:
