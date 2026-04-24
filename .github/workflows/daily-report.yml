@@ -1,0 +1,90 @@
+name: Daily AI Report
+
+on:
+  schedule:
+    - cron: "30 0 * * *"
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: "Optional target date (YYYY-MM-DD)"
+        required: false
+        type: string
+      dry_run:
+        description: "Preview only without sending Feishu message"
+        required: false
+        default: false
+        type: boolean
+      max_items:
+        description: "Maximum number of items after dedup"
+        required: false
+        default: "12"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-ai-report
+  cancel-in-progress: false
+
+jobs:
+  run-daily-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ENV: prod
+      LOG_LEVEL: INFO
+      TIMEZONE: Asia/Shanghai
+      LLM_PROVIDER: openai_compatible
+      LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_MODEL: ${{ secrets.LLM_MODEL }}
+      FEISHU_ENABLED: true
+      FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+      FEISHU_MESSAGE_TITLE: ${{ secrets.FEISHU_MESSAGE_TITLE }}
+      GENERATE_COVER_IMAGE: false
+      GENERATE_ARTICLE_IMAGES: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run tests
+        run: uv run python -B -m pytest -q -p no:cacheprovider
+
+      - name: Run daily pipeline
+        shell: bash
+        run: |
+          ARGS="--max-items ${{ github.event.inputs.max_items || '12' }}"
+
+          if [ -n "${{ github.event.inputs.target_date }}" ]; then
+            ARGS="$ARGS --date ${{ github.event.inputs.target_date }}"
+          fi
+
+          if [ "${{ github.event.inputs.dry_run || 'false' }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+
+          echo "Running: uv run python -m src.main $ARGS"
+          uv run python -m src.main $ARGS
+
+      - name: Upload output artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-daily-output
+          path: |
+            data/output
+            docs/articles
+          if-no-files-found: warn
