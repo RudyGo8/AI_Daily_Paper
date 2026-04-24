@@ -1,22 +1,146 @@
 {
   "target_date": "2026-04-24",
-  "title": "GPT-5.5 重磅发布：OpenAI 定义“新智能”层级，微软获最强大模型赋能网络安全",
-  "digest": "Sierra 收购 Fragment 加速 AI 客服布局；Noscroll 以 AI 守护数字健康；OpenAI 推出 GPT-5.5 代理模型但定价翻倍；美指中国窃取 AI 技术，全球博弈升级。",
-  "intro": "【AI 日报】2026.04.24 | 今日科技圈风云再起：OpenAI 携“新智能”GPT-5.5 强势登场，API 价格翻倍却难掩其野心；Bret Taylor 的 Sierra 加速布局，吞下 YC 新星 Fragment；更有 Noscroll 化身你的“反内耗”助手，让算法为你打工。然而，在技术狂飙背后，特朗普科学顾问直指中国 AI 正以“大规模复制”模式追赶，而 Google 开源的 DESIGN.md 则为品牌化 Agent 铺平了道路。是技术奇点临近，还是新一轮军备竞赛开启？今日深度拆解。",
-  "closing": "感谢阅读今日的分享。AI 浪潮奔涌，愿我们始终保持清醒与好奇，在变革中稳步前行。明日同一时间，我们将继续为您解读前沿动态与深度思考，敬请关注公众号，期待与您再次相遇。",
-  "total_items": 7,
+  "title": "DeepMind 88% 高可用训练、OpenAI GPT-5.5 智能体突破与 Mend 安全框架：2026 AI 前沿速递",
+  "digest": "DeepMind 推出异步架构提升千卡训练稳定性；Mend.io 发布 AI 安全治理框架转向主动防御；OpenAI 发布 GPT-5.5 实现全栈自主代理；MarkTechPost 解析 OpenMythos 以深度计算替代堆参数，共绘大",
+  "intro": "【AI 日报】2026.04.24 | 今日大模型圈“炸”了：OpenAI 甩出全重训智能体 GPT-5.5，终端与 GDP 双榜霸屏；DeepMind 以 Decoupled DiLoCo 架构在硬件高故障率下跑出 88% 有效吞吐；Mend 发布安全治理新框架，补齐供应链短板。此外，OpenMythos 揭秘循环深度 Transformer 新范式，Bret Taylor 的 Sierra 则加速布局 YC 新星 Fragment。技术迭代再提速，生态格局正重塑，一文速览今日核心动态。",
+  "closing": "感谢阅读今日的分享。AI 浪潮奔涌，愿我们始终保持清醒与好奇，在技术变革中从容前行。明日同一时间，我们将继续为您解读前沿动态与深度思考，敬请关注公众号，期待与您再次相遇。",
+  "total_items": 11,
   "cover_image_path": "F:/AI_Models/DEMO/My_Demo/3.AI_daily_paper/docs/images/cover_2026-04-24.png",
-  "image_paths": [],
+  "image_paths": [
+    "F:/AI_Models/DEMO/My_Demo/3.AI_daily_paper/docs/images/poster_2026-04-24.png"
+  ],
   "categories": {
     "模型发布": [
+      {
+        "source": "MarkTechPost (Research + Agents)",
+        "title": "Mend Releases AI Security Governance Framework: Covering Asset Inventory, Risk Tiering, AI Supply Chain Security, and Maturity Model",
+        "link": "https://www.marktechpost.com/2026/04/23/mend-releases-ai-security-governance-framework/",
+        "published_at": "2026-04-24T02:07:11+00:00",
+        "summary": "Mend.io's new framework gives engineering and security teams a practical playbook for governing AI systems before the next incident forces the conversation. The post Mend Releases AI Security Governance Framework: Covering Asset Inventory, Risk Tiering, AI Supply Chain Security, and Maturity Model appeared first on MarkTechPost .",
+        "content": "",
+        "author": "Asif Razzaq",
+        "category": "模型发布",
+        "keywords": [
+          "ai",
+          "security",
+          "mend",
+          "framework",
+          "releases",
+          "governance"
+        ],
+        "ai_summary": "Mend.io 发布了全新的 AI 安全治理框架，为工程与安全团队提供了一套涵盖资产盘点、风险分级、供应链安全及成熟度评估的实操指南。该举措旨在帮助企业在发生严重事故前建立系统化的管控机制，从而主动应对日益复杂的 AI 安全风险。这一框架的推出标志着行业正从被动响应转向主动治理，对构建可信的 AI 生态系统具有重要意义。",
+        "merged_sources": [
+          "MarkTechPost (Research + Agents)"
+        ],
+        "merged_links": [
+          "https://www.marktechpost.com/2026/04/23/mend-releases-ai-security-governance-framework/"
+        ],
+        "merged_titles": [
+          "Mend Releases AI Security Governance Framework: Covering Asset Inventory, Risk Tiering, AI Supply Chain Security, and Maturity Model"
+        ],
+        "cluster_size": 1
+      },
+      {
+        "source": "MarkTechPost (Research + Agents)",
+        "title": "OpenAI Releases GPT-5.5, a Fully Retrained Agentic Model That Scores 82.7% on Terminal-Bench 2.0 and 84.9% on GDPval",
+        "link": "https://www.marktechpost.com/2026/04/23/openai-releases-gpt-5-5-a-fully-retrained-agentic-model-that-scores-82-7-on-terminal-bench-2-0-and-84-9-on-gdpval/",
+        "published_at": "2026-04-23T22:11:30+00:00",
+        "summary": "The model targets the full stack of computer work — coding, research, data analysis, and software operation — without needing a human to supervise every step The post OpenAI Releases GPT-5.5, a Fully Retrained Agentic Model That Scores 82.7% on Terminal-Bench 2.0 and 84.9% on GDPval appeared first on MarkTechPost .",
+        "content": "",
+        "author": "Michal Sutter",
+        "category": "模型发布",
+        "keywords": [
+          "on",
+          "model",
+          "openai",
+          "releases",
+          "gpt-5",
+          "fully"
+        ],
+        "ai_summary": "OpenAI 正式发布了全栈重训的代理模型 GPT-5.5，该模型能在无需人工干预的情况下独立完成编码、研究、数据分析及软件操作等全流程任务。其在 Terminal-Bench 2.0 和 GDPval 基准测试中分别取得 82.7% 和 84.9% 的高分，标志着 AI 在自主执行复杂计算机任务方面取得了突破性进展。这一发布意味着通用人工智能正从辅助工具向具备高度自主性的“全能员工”演进，将深刻改变软件开发与科研工作的效率范式。",
+        "merged_sources": [
+          "MarkTechPost (Research + Agents)",
+          "The Decoder",
+          "TechCrunch AI"
+        ],
+        "merged_links": [
+          "https://www.marktechpost.com/2026/04/23/openai-releases-gpt-5-5-a-fully-retrained-agentic-model-that-scores-82-7-on-terminal-bench-2-0-and-84-9-on-gdpval/",
+          "https://the-decoder.com/openai-unveils-gpt-5-5-claims-a-new-class-of-intelligence-at-double-the-api-price/",
+          "https://techcrunch.com/2026/04/23/openai-chatgpt-gpt-5-5-ai-model-superapp/"
+        ],
+        "merged_titles": [
+          "OpenAI Releases GPT-5.5, a Fully Retrained Agentic Model That Scores 82.7% on Terminal-Bench 2.0 and 84.9% on GDPval",
+          "OpenAI unveils GPT-5.5, claims a \"new class of intelligence\" at double the API price",
+          "OpenAI releases GPT-5.5, bringing company one step closer to an AI ‘super app’"
+        ],
+        "cluster_size": 3
+      },
+      {
+        "source": "MarkTechPost (Research + Agents)",
+        "title": "A Coding Tutorial on OpenMythos on Recurrent-Depth Transformers with Depth Extrapolation, Adaptive Computation, and Mixture-of-Experts Routing",
+        "link": "https://www.marktechpost.com/2026/04/23/a-coding-tutorial-on-openmythos-on-recurrent-depth-transformers-with-depth-extrapolation-adaptive-computation-and-mixture-of-experts-routing/",
+        "published_at": "2026-04-23T21:25:34+00:00",
+        "summary": "In this tutorial, we explore the implementation of OpenMythos, a theoretical reconstruction of the Claude Mythos architecture that enables deeper reasoning through iterative computation rather than increased parameter size. We build and analyze models using both GQA and MLA attention mechanisms, examine memory efficiency through KV-cache comparisons, and validate stability via the spectral properties of […] The post A Coding Tutorial on OpenMythos on Recurrent-Depth Transformers with Depth Extrapolation, Adaptive Computation, and Mixture-of-Experts Routing appeared first on MarkTechPost .",
+        "content": "",
+        "author": "Asif Razzaq",
+        "category": "模型发布",
+        "keywords": [
+          "on",
+          "tutorial",
+          "openmythos",
+          "computation",
+          "of",
+          "coding"
+        ],
+        "ai_summary": "MarkTechPost 发布了一篇关于 OpenMythos 的教程，该架构通过迭代计算而非单纯增加参数量来实现更深层的推理能力。文章详细分析了结合 GQA 和 MLA 注意力机制、KV 缓存内存效率及模型稳定性的具体实现方案。这一进展标志着大模型正从“堆砌参数”转向“深度计算”，为提升推理效率与降低资源消耗提供了新的技术路径。",
+        "merged_sources": [
+          "MarkTechPost (Research + Agents)"
+        ],
+        "merged_links": [
+          "https://www.marktechpost.com/2026/04/23/a-coding-tutorial-on-openmythos-on-recurrent-depth-transformers-with-depth-extrapolation-adaptive-computation-and-mixture-of-experts-routing/"
+        ],
+        "merged_titles": [
+          "A Coding Tutorial on OpenMythos on Recurrent-Depth Transformers with Depth Extrapolation, Adaptive Computation, and Mixture-of-Experts Routing"
+        ],
+        "cluster_size": 1
+      },
+      {
+        "source": "NVIDIA Blog (AI)",
+        "title": "Winning a Kaggle Competition with Generative AI–Assisted Coding",
+        "link": "https://developer.nvidia.com/blog/winning-a-kaggle-competition-with-generative-ai-assisted-coding/",
+        "published_at": "2026-04-23T20:15:02+00:00",
+        "summary": "In March 2026, three LLM agents generated over 600,000 lines of code, ran 850 experiments, and helped secure a first-place finish in a Kaggle playground...",
+        "content": "",
+        "author": "Chris Deotte",
+        "category": "模型发布",
+        "keywords": [
+          "kaggle",
+          "in",
+          "winning",
+          "competition",
+          "generative",
+          "ai"
+        ],
+        "ai_summary": "2026 年 3 月，三个大语言模型智能体在 Kaggle 竞赛中通过生成超过 60 万行代码并执行 850 次实验，成功斩获第一名。这一突破标志着 AI 代理已从辅助工具进化为具备独立解决复杂工程问题能力的核心力量。它预示着未来软件开发模式将发生根本性变革，极大提升研发效率并重新定义人机协作的边界。",
+        "merged_sources": [
+          "NVIDIA Blog (AI)"
+        ],
+        "merged_links": [
+          "https://developer.nvidia.com/blog/winning-a-kaggle-competition-with-generative-ai-assisted-coding/"
+        ],
+        "merged_titles": [
+          "Winning a Kaggle Competition with Generative AI–Assisted Coding"
+        ],
+        "cluster_size": 1
+      },
       {
         "source": "The Decoder",
         "title": "OpenAI's new Trusted Access program gives Microsoft its most capable models for cyber defense",
         "link": "https://the-decoder.com/openais-new-trusted-access-program-gives-microsoft-its-most-capable-models-for-cyber-defense/",
         "published_at": "2026-04-23T16:09:29+00:00",
         "summary": "OpenAI and Microsoft are joining forces to shore up cybersecurity as AI models become a bigger threat. The debate started with Anthropic's Mythos model, which is designed to hunt down security flaws on its own. The article OpenAI's new Trusted Access program gives Microsoft its most capable models for cyber defense appeared first on The Decoder .",
-        "content": "OpenAI and Microsoft are joining forces to shore up cybersecurity as AI models become a bigger threat. The debate started with Anthropic's Mythos model, which is designed to hunt down security flaws on its own. The article OpenAI's new Trusted Access program gives Microsoft its most capable models for cyber defense appeared first on The Decoder .",
-        "author": "",
+        "content": "",
+        "author": "Matthias Bastian",
         "category": "模型发布",
         "keywords": [
           "openai",
@@ -26,7 +150,7 @@
           "new",
           "trusted"
         ],
-        "ai_summary": "OpenAI 与微软联手推出“可信访问”计划，将 OpenAI 最强大的模型授权给微软用于网络防御，以应对日益严峻的 AI 安全威胁。此举旨在利用先进 AI 技术主动识别和修复系统漏洞，特别是在 Anthropic 等公司开发自主攻击性模型引发担忧的背景下，该合作标志着科技巨头正通过强化自身防御能力来平衡 AI 带来的双重风险。",
+        "ai_summary": "OpenAI 与微软联手推出“可信访问”计划，将 OpenAI 最先进的大模型授权给微软用于网络防御，以应对日益严峻的 AI 安全威胁。这一合作旨在利用 Anthropic 等公司展示的自主漏洞挖掘能力，主动强化企业级网络安全防线。此举标志着科技巨头正从被动防御转向利用生成式 AI 技术构建更智能、更主动的对抗性安全体系。",
         "merged_sources": [
           "The Decoder"
         ],
@@ -39,6 +163,37 @@
         "cluster_size": 1
       }
     ],
+    "产品动态": [
+      {
+        "source": "MarkTechPost (Research + Agents)",
+        "title": "Google DeepMind Introduces Decoupled DiLoCo: An Asynchronous Training Architecture Achieving 88% Goodput Under High Hardware Failure Rates",
+        "link": "https://www.marktechpost.com/2026/04/23/google-deepmind-introduces-decoupled-diloco-an-asynchronous-training-architecture-achieving-88-goodput-under-high-hardware-failure-rates/",
+        "published_at": "2026-04-24T04:40:10+00:00",
+        "summary": "Training frontier AI models is, at its core, a coordination problem. Thousands of chips must communicate with each other continuously, synchronizing every gradient update across the network. When one chip fails or even slows down, the entire training run can stall. As models scale toward hundreds of billions of parameters, that fragility becomes increasingly untenable. […] The post Google DeepMind Introduces Decoupled DiLoCo: An Asynchronous Training Architecture Achieving 88% Goodput Under High Hardware Failure Rates appeared first on MarkTechPost .",
+        "content": "",
+        "author": "Asif Razzaq",
+        "category": "产品动态",
+        "keywords": [
+          "training",
+          "of",
+          "google",
+          "deepmind",
+          "introduces",
+          "decoupled"
+        ],
+        "ai_summary": "Google DeepMind 推出了名为 Decoupled DiLoCo 的异步训练架构，旨在解决超大规模 AI 模型训练中因硬件故障或延迟导致的全局停滞难题。该架构通过解耦通信与计算，在极高硬件故障率下仍能实现 88% 的有效吞吐量（Goodput）。这一突破显著提升了千卡级集群训练的稳定性与效率，为未来百亿美元参数模型的规模化部署扫清了关键障碍。",
+        "merged_sources": [
+          "MarkTechPost (Research + Agents)"
+        ],
+        "merged_links": [
+          "https://www.marktechpost.com/2026/04/23/google-deepmind-introduces-decoupled-diloco-an-asynchronous-training-architecture-achieving-88-goodput-under-high-hardware-failure-rates/"
+        ],
+        "merged_titles": [
+          "Google DeepMind Introduces Decoupled DiLoCo: An Asynchronous Training Architecture Achieving 88% Goodput Under High Hardware Failure Rates"
+        ],
+        "cluster_size": 1
+      }
+    ],
     "工具框架": [
       {
         "source": "TechCrunch AI",
@@ -46,8 +201,8 @@
         "link": "https://techcrunch.com/2026/04/23/bret-taylors-sierra-buys-yc-backed-ai-startup-fragment/",
         "published_at": "2026-04-23T21:00:00+00:00",
         "summary": "Sierra, the AI customer service agent startup founded by technologist Bret Taylor, announced today that it has acquired the YC-backed French startup Fragment.",
-        "content": "Sierra, the AI customer service agent startup founded by technologist Bret Taylor, announced today that it has acquired the YC-backed French startup Fragment.",
-        "author": "",
+        "content": "",
+        "author": "Dominic-Madori Davis",
         "category": "工具框架",
         "keywords": [
           "startup",
@@ -57,7 +212,7 @@
           "yc-backed",
           "ai"
         ],
-        "ai_summary": "Bret Taylor 创立的 AI 客服代理公司 Sierra 宣布收购 YC 支持的法国初创企业 Fragment。此次收购旨在通过整合 Fragment 的技术能力，进一步扩展 Sierra 在人工智能领域的产品矩阵与市场竞争力。这一举动标志着头部 AI 玩家正加速通过并购来巩固其在客户服务自动化赛道的主导地位。",
+        "ai_summary": "由前谷歌高管布雷特·泰勒创立的 AI 客服初创公司 Sierra，宣布收购了 YC 支持的法国初创企业 Fragment。此次并购旨在整合 Fragment 的技术能力，以增强 Sierra 在复杂客户交互场景下的解决方案实力。这一动作标志着 AI 客服领域正加速通过技术融合来应对日益增长的市场需求，并进一步巩固头部企业的竞争壁垒。",
         "merged_sources": [
           "TechCrunch AI"
         ],
@@ -71,44 +226,12 @@
       },
       {
         "source": "The Decoder",
-        "title": "OpenAI unveils GPT-5.5, claims a \"new class of intelligence\" at double the API price",
-        "link": "https://the-decoder.com/openai-unveils-gpt-5-5-claims-a-new-class-of-intelligence-at-double-the-api-price/",
-        "published_at": "2026-04-23T19:01:07+00:00",
-        "summary": "OpenAI has announced GPT-5.5, an agentic model designed to work through complex tasks autonomously by switching between multiple tools. The article OpenAI unveils GPT-5.5, claims a \"new class of intelligence\" at double the API price appeared first on The Decoder .",
-        "content": "OpenAI has announced GPT-5.5, an agentic model designed to work through complex tasks autonomously by switching between multiple tools. The article OpenAI unveils GPT-5.5, claims a \"new class of intelligence\" at double the API price appeared first on The Decoder .",
-        "author": "",
-        "category": "工具框架",
-        "keywords": [
-          "openai",
-          "gpt-5",
-          "unveils",
-          "claims",
-          "new",
-          "class"
-        ],
-        "ai_summary": "OpenAI 正式推出 GPT-5.5，将其定义为一种能通过自主切换工具处理复杂任务的“新智能类别”代理模型。该模型在提升自动化能力的同时，API 定价翻倍至原有水平的两倍。这一发布标志着大模型向全自主代理演进的关键一步，但也引发了业界对成本效益平衡及商业化门槛的广泛关注。",
-        "merged_sources": [
-          "The Decoder",
-          "TechCrunch AI"
-        ],
-        "merged_links": [
-          "https://the-decoder.com/openai-unveils-gpt-5-5-claims-a-new-class-of-intelligence-at-double-the-api-price/",
-          "https://techcrunch.com/2026/04/23/openai-chatgpt-gpt-5-5-ai-model-superapp/"
-        ],
-        "merged_titles": [
-          "OpenAI unveils GPT-5.5, claims a \"new class of intelligence\" at double the API price",
-          "OpenAI releases GPT-5.5, bringing company one step closer to an AI ‘super app’"
-        ],
-        "cluster_size": 2
-      },
-      {
-        "source": "The Decoder",
         "title": "Google's open-source DESIGN.md gives AI agents a prompt-ready blueprint for brand-consistent design",
         "link": "https://the-decoder.com/googles-open-source-design-md-gives-ai-agents-a-prompt-ready-blueprint-for-brand-consistent-design/",
         "published_at": "2026-04-23T17:20:06+00:00",
         "summary": "Google is open-sourcing the agent prompt behind its AI design tool Stitch. The DESIGN.md format is built to teach AI agents how to follow brand rules. The article Google's open-source DESIGN.md gives AI agents a prompt-ready blueprint for brand-consistent design appeared first on The Decoder .",
-        "content": "Google is open-sourcing the agent prompt behind its AI design tool Stitch. The DESIGN.md format is built to teach AI agents how to follow brand rules. The article Google's open-source DESIGN.md gives AI agents a prompt-ready blueprint for brand-consistent design appeared first on The Decoder .",
-        "author": "",
+        "content": "",
+        "author": "Matthias Bastian",
         "category": "工具框架",
         "keywords": [
           "design",
@@ -118,7 +241,7 @@
           "agents",
           "open-source"
         ],
-        "ai_summary": "Google 正式开源了名为 DESIGN.md 的提示词格式，旨在为 AI 智能体提供一套标准化的品牌设计规范蓝图。该工具通过结构化指令教会 AI 在生成设计内容时严格遵循品牌规则，解决了以往自动化设计中难以保持视觉一致性的痛点。此举标志着企业级 AI 应用正从通用生成向可信赖、高合规的品牌化落地迈出关键一步。",
+        "ai_summary": "Google 正式开源了其 AI 设计工具 Stitch 背后的提示词框架 DESIGN.md，旨在为 AI 代理提供遵循品牌规范的标准化蓝图。这一举措通过统一的设计指令格式，解决了生成式 AI 在商业应用中难以保持品牌一致性的关键痛点。此举标志着行业正从单纯的工具开放转向构建可复用的智能体协作标准，将加速 AI 在设计领域的规模化落地。",
         "merged_sources": [
           "The Decoder"
         ],
@@ -136,8 +259,8 @@
         "link": "https://techcrunch.com/2026/04/23/era-computer-raises-11m-to-build-a-software-platform-for-ai-gadgets/",
         "published_at": "2026-04-23T16:00:00+00:00",
         "summary": "Era thinks that we will see many form factors of AI hardware, including glasses, rings, and pendants.",
-        "content": "Era thinks that we will see many form factors of AI hardware, including glasses, rings, and pendants.",
-        "author": "",
+        "content": "",
+        "author": "Ivan Mehta",
         "category": "工具框架",
         "keywords": [
           "era",
@@ -147,7 +270,7 @@
           "build",
           "software"
         ],
-        "ai_summary": "AI 初创公司 Era 成功筹集 1100 万美元，旨在开发一个能够兼容眼镜、戒指和吊坠等多种形态的 AI 硬件软件平台。此举之所以关键，是因为它试图解决未来 AI 设备碎片化带来的挑战，通过统一的底层架构让开发者能轻松适配不同形态的终端，从而加速 AI 硬件生态的普及与整合。",
+        "ai_summary": "Era 预测未来 AI 硬件将呈现多元化形态，涵盖眼镜、戒指及吊坠等多种设备。这一趋势表明行业正从单一计算终端向更贴近人体、无感化的可穿戴生态演进。这标志着 AI 交互方式将发生根本性变革，推动人工智能真正融入日常生活场景。",
         "merged_sources": [
           "TechCrunch AI"
         ],
@@ -167,8 +290,8 @@
         "link": "https://techcrunch.com/2026/04/23/meet-noscroll-an-ai-bot-that-does-your-doomscrolling-for-you/",
         "published_at": "2026-04-23T19:38:25+00:00",
         "summary": "Noscroll wants to cure doomscrolling with an AI bot that reads the internet for you.",
-        "content": "Noscroll wants to cure doomscrolling with an AI bot that reads the internet for you.",
-        "author": "",
+        "content": "",
+        "author": "Sarah Perez",
         "category": "行业事件",
         "keywords": [
           "noscroll",
@@ -178,7 +301,7 @@
           "doomscrolling",
           "you"
         ],
-        "ai_summary": "科技初创公司推出名为 Noscroll 的 AI 机器人，旨在通过自动阅读并总结互联网内容来帮助用户摆脱“末日刷屏”（doomscrolling）的习惯。该工具的核心价值在于将被动、无休止的信息消费转化为高效、主动的知识获取，从而缓解用户因过度浏览负面新闻而产生的焦虑与时间浪费。这一创新标志着 AI 正从单纯的内容生成者转向个人数字健康的守护者，为解决信息过载问题提供了新的技术路径。",
+        "ai_summary": "初创公司 Noscroll 推出了一款 AI 机器人，旨在通过主动为用户阅读并总结互联网内容，从根本上解决“末日刷屏”（doomscrolling）带来的焦虑与时间浪费问题。这一创新标志着从被动消耗信息向主动获取关键资讯的范式转变，有望帮助用户在信息过载时代重获专注力与心理健康。",
         "merged_sources": [
           "TechCrunch AI"
         ],
@@ -196,8 +319,8 @@
         "link": "https://the-decoder.com/trump-science-advisor-says-chinese-actors-are-copying-american-ai-at-massive-scale/",
         "published_at": "2026-04-23T18:04:39+00:00",
         "summary": "The US government says it has evidence of large-scale, industrial distillation campaigns targeting American frontier models, with China as the primary culprit. Now the Trump administration is moving to fight back. The article Trump science advisor says Chinese actors are copying American AI at massive scale appeared first on The Decoder .",
-        "content": "The US government says it has evidence of large-scale, industrial distillation campaigns targeting American frontier models, with China as the primary culprit. Now the Trump administration is moving to fight back. The article Trump science advisor says Chinese actors are copying American AI at massive scale appeared first on The Decoder .",
-        "author": "",
+        "content": "",
+        "author": "Matthias Bastian",
         "category": "行业事件",
         "keywords": [
           "trump",
@@ -207,7 +330,7 @@
           "advisor",
           "chinese"
         ],
-        "ai_summary": "美国特朗普政府科学顾问指控中国行为体正以大规模工业级手段窃取和复制美国前沿人工智能模型。这一指控揭示了中美在 AI 技术领域的竞争已升级至国家级层面的知识产权攻防，促使美国政府准备采取反制措施以保护其核心技术优势。此举标志着全球 AI 博弈从单纯的技术竞赛转向了对数据资产与模型安全的直接对抗。",
+        "ai_summary": "美国特朗普政府指控中国正以大规模工业级手段窃取并复制美国前沿人工智能模型，已掌握相关确凿证据。为此，美方计划采取强硬反制措施以遏制此类行为，旨在保护其核心 AI 技术优势与国家安全。此举标志着中美在人工智能领域的竞争已从单纯的技术博弈升级为涉及知识产权与国家战略安全的直接对抗。",
         "merged_sources": [
           "The Decoder"
         ],

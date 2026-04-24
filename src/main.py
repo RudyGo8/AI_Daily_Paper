@@ -19,6 +19,7 @@ from src.processors.classifier import TopicClassifier
 from src.processors.cleaner import ContentCleaner
 from src.processors.deduplicator import NewsDeduplicator
 from src.processors.keyword_extractor import KeywordExtractor
+from src.publishers.feishu_bot import FeishuBotPublisher
 from src.renderers.html_renderer import HtmlRenderer
 from src.renderers.image_renderer import ImageRenderer
 from src.renderers.markdown_renderer import MarkdownRenderer
@@ -205,6 +206,15 @@ def run_pipeline(
     write_text(docs_markdown_path, article.markdown_content)
     write_text(docs_html_path, article.html_content)
 
+    feishu_result = {"enabled": False, "sent": False}
+    if settings.feishu_enabled:
+        feishu_result = FeishuBotPublisher(
+            webhook_url=settings.feishu_webhook_url,
+            message_title=settings.feishu_message_title,
+            dry_run=dry_run,
+        ).publish(article)
+        feishu_result["enabled"] = True
+
     report = {
         "target_date": target_date.isoformat(),
         "total_raw_items": len(raw_items),
@@ -212,7 +222,7 @@ def run_pipeline(
         "markdown_path": markdown_path.as_posix(),
         "html_path": html_path.as_posix(),
         "json_path": json_path.as_posix(),
-        "image_paths": article.image_paths,
+        "feishu_result": feishu_result,
     }
     logger.info("Pipeline finished: %s", json.dumps(report, ensure_ascii=False))
     return report

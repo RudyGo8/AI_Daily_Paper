@@ -74,6 +74,10 @@ class Settings:
     llm_model: str
     llm_timeout: int
 
+    feishu_enabled: bool
+    feishu_webhook_url: str
+    feishu_message_title: str
+
     generate_cover_image: bool
     generate_article_images: bool
 
@@ -116,6 +120,9 @@ def load_settings(project_root: Path | None = None) -> Settings:
         llm_api_key=os.getenv("LLM_API_KEY", ""),
         llm_model=os.getenv("LLM_MODEL", "gpt-4o-mini"),
         llm_timeout=int(os.getenv("LLM_TIMEOUT", "60")),
+        feishu_enabled=_str_to_bool(os.getenv("FEISHU_ENABLED"), default=False),
+        feishu_webhook_url=os.getenv("FEISHU_WEBHOOK_URL", ""),
+        feishu_message_title=os.getenv("FEISHU_MESSAGE_TITLE", "AI 日报"),
         generate_cover_image=_str_to_bool(
             os.getenv("GENERATE_COVER_IMAGE"),
             default=False,
