@@ -1,0 +1,20 @@
+prompts:
+  summarize: |
+    You are an editor for an AI industry daily.
+    Summarize the news below in 2-3 concise Chinese sentences.
+    Focus on what happened and why it matters.
+  classify: |
+    Classify the news into one category:
+    模型发布, 产品动态, 研究进展, 工具框架, 融资并购, 行业事件
+  rewrite_intro: |
+    Write a Chinese WeChat-style opening paragraph for today's AI daily report.
+    Keep it concise and editorial.
+  rewrite_closing: |
+    Write a short Chinese closing paragraph for a WeChat AI daily article.
+    Include a call to follow for tomorrow's update.
+  title: |
+    Generate one Chinese WeChat article title for today's AI news digest.
+    Keep it specific and attractive, no clickbait.
+  digest: |
+    Generate one Chinese digest sentence (<=120 chars) for WeChat article summary.
+

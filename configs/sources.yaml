@@ -1,0 +1,109 @@
+sources:
+  # ==================== 全球大厂官方（高优先级） ====================
+  - name: OpenAI News
+    url: https://openai.com/news/rss.xml
+    category: official
+    lang: en
+    priority: high
+    enabled: true
+
+  - name: Google AI Blog
+    url: https://blog.google/technology/ai/rss/
+    category: official
+    lang: en
+    priority: high
+    enabled: true
+
+  - name: Anthropic News
+    url: https://www.anthropic.com/news/rss
+    category: official
+    lang: en
+    priority: high
+    enabled: true
+
+  - name: Meta AI Blog
+    url: https://ai.meta.com/blog/rss/
+    category: official
+    lang: en
+    priority: high
+    enabled: true
+
+  - name: Microsoft AI Blog
+    url: https://blogs.microsoft.com/ai/feed/
+    category: official
+    lang: en
+    priority: high
+    enabled: true
+
+  - name: NVIDIA Blog (AI)
+    url: https://developer.nvidia.com/blog/feed
+    category: official
+    lang: en
+    priority: medium
+    enabled: true
+
+  # ==================== Agent / 智能体专区 ====================
+  - name: The Rundown AI (Agents & Tools)
+    url: https://www.therundown.ai/feed
+    category: agents
+    lang: en
+    priority: high
+    enabled: true
+
+  - name: Ben's Bites (Daily AI + Agents)
+    url: https://www.bensbites.com/feed
+    category: agents
+    lang: en
+    priority: high
+    enabled: true
+
+  - name: MarkTechPost (Research + Agents)
+    url: https://www.marktechpost.com/feed
+    category: agents
+    lang: en
+    priority: medium
+    enabled: true
+
+  # ==================== 企业落地 & 应用案例 ====================
+  - name: VentureBeat AI
+    url: https://venturebeat.com/category/ai/feed/
+    category: enterprise
+    lang: en
+    priority: high
+    enabled: true
+
+  - name: AI Business (Enterprise Adoption)
+    url: https://aibusiness.com/feed
+    category: enterprise
+    lang: en
+    priority: high
+    enabled: true
+
+  - name: The Information AI
+    url: https://www.theinformation.com/topics/artificial-intelligence/rss   # 如有付费墙可降级
+    category: enterprise
+    lang: en
+    priority: medium
+    enabled: true
+
+  # ==================== 行业媒体 & 趋势 ====================
+  - name: MIT Technology Review AI
+    url: https://www.technologyreview.com/topic/artificial-intelligence/feed
+    category: media
+    lang: en
+    priority: medium
+    enabled: true
+
+  - name: TechCrunch AI
+    url: https://techcrunch.com/category/artificial-intelligence/feed/
+    category: media
+    lang: en
+    priority: medium
+    enabled: true
+
+  - name: The Decoder
+    url: https://the-decoder.com/feed
+    category: media
+    lang: en
+    priority: medium
+    enabled: true

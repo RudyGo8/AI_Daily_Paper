@@ -1,0 +1,40 @@
+categories:
+  模型发布:
+    - model
+    - release
+    - launch
+    - llm
+    - gpt
+    - claude
+    - gemini
+  产品动态:
+    - product
+    - feature
+    - update
+    - app
+    - tool
+  研究进展:
+    - research
+    - paper
+    - benchmark
+    - arxiv
+    - study
+  工具框架:
+    - framework
+    - sdk
+    - library
+    - api
+    - agent
+  融资并购:
+    - funding
+    - acquisition
+    - investment
+    - raise
+    - merger
+  行业事件:
+    - regulation
+    - policy
+    - market
+    - partnership
+    - enterprise
+
