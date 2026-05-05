@@ -225,11 +225,10 @@ def run_pipeline(
     write_text(docs_markdown_path, article.markdown_content)
     write_text(docs_html_path, article.html_content)
 
-    # GitHub Pages: 更新 latest.html 供外部访问
+    # GitHub Pages: 输出 JSON 数据 + Vue 前端渲染
     gh_pages_dir = settings.docs_dir / "ai-daily"
-    gh_pages_path = gh_pages_dir / "latest.html"
-    write_text(gh_pages_path, article.html_content)
-    logger.info("GitHub Pages updated: %s", gh_pages_path.as_posix())
+    write_json(gh_pages_dir / "data.json", article.to_dict())
+    logger.info("GitHub Pages updated: %s", (gh_pages_dir / "data.json").as_posix())
 
     feishu_result = {"enabled": False, "sent": False}
     if settings.feishu_enabled:
