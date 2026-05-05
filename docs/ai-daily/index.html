@@ -121,12 +121,13 @@
       margin-left: auto;
     }
 
-    /* Grid */
+    /* Grid — 探险布局：两侧留白 10%，卡片间距 5% */
     .category-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      grid-template-columns: 10% 1fr 5% 1fr 10%;
     }
+    .category-grid .news-card:nth-child(odd)  { grid-column: 2; }
+    .category-grid .news-card:nth-child(even) { grid-column: 4; }
 
     /* Card */
     .news-card {
@@ -257,7 +258,12 @@
     @media (max-width: 768px) {
       .header { padding: 36px 16px 28px; }
       .container { padding: 16px 14px 48px; }
-      .category-grid { grid-template-columns: 1fr; gap: 10px; }
+      .category-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .category-grid .news-card:nth-child(odd),
+      .category-grid .news-card:nth-child(even) { grid-column: auto; }
       .news-card { padding: 16px 18px; }
       .news-card .card-summary,
       .news-card .card-footer { padding-left: 28px; }
