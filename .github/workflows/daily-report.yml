@@ -22,6 +22,8 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: daily-ai-report
@@ -31,17 +33,25 @@ jobs:
   run-daily-report:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     env:
       ENV: prod
       LOG_LEVEL: INFO
       TIMEZONE: Asia/Shanghai
+
       LLM_PROVIDER: openai_compatible
       LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}
       LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
       LLM_MODEL: ${{ secrets.LLM_MODEL }}
+
       FEISHU_ENABLED: true
       FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
       FEISHU_MESSAGE_TITLE: ${{ secrets.FEISHU_MESSAGE_TITLE }}
+
       GENERATE_COVER_IMAGE: false
       GENERATE_ARTICLE_IMAGES: false
 
@@ -67,24 +77,28 @@ jobs:
         shell: bash
         run: |
           ARGS="--max-items ${{ github.event.inputs.max_items || '12' }}"
-
           if [ -n "${{ github.event.inputs.target_date }}" ]; then
             ARGS="$ARGS --date ${{ github.event.inputs.target_date }}"
           fi
-
           if [ "${{ github.event.inputs.dry_run || 'false' }}" = "true" ]; then
             ARGS="$ARGS --dry-run"
           fi
-
           echo "Running: uv run python -m src.main $ARGS"
           uv run python -m src.main $ARGS
 
-      - name: Upload output artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Check docs output
+        run: |
+          echo "===== docs files ====="
+          find docs -maxdepth 3 -type f | sort
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          name: ai-daily-output
-          path: |
-            data/output
-            docs/articles
-          if-no-files-found: warn
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
