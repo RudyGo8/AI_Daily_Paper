@@ -385,3 +385,103 @@
     }
   }
 </style>
+</head>
+<body>
+  <div id="app">
+    <div v-if="loading" class="loading">
+      <div class="spinner"></div>
+      <p>加载日报中…</p>
+    </div>
+    <div v-else-if="error" class="empty">
+      <p style="font-size:32px;margin-bottom:12px;">&#128533;</p>
+      <p>加载失败：{{ error }}</p>
+    </div>
+    <div v-else-if="!data" class="empty">
+      <p style="font-size:48px;margin-bottom:16px;">&#128240;</p>
+      <p>日报数据暂无，请稍后再来。</p>
+    </div>
+    <template v-else>
+      <div class="header">
+        <div class="header-content">
+          <div class="header-badge">AI DAILY BRIEF</div>
+          <h1>{{ data.title }}</h1>
+          <div class="meta">
+            <span>&#128197; {{ data.target_date }}</span>
+            <span>&#128214; {{ data.total_items }} 条重点动态</span>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="intro-card" v-if="data.intro">{{ data.intro }}</div>
+        <div v-for="(items, category) in data.categories" :key="category" class="category-section">
+          <div class="category-title">
+            <span class="category-dot" :style="{ background: catColor(category, 0) }"></span>
+            {{ category }}
+            <span class="category-count">{{ items.length }} 条</span>
+          </div>
+          <div class="category-grid">
+            <div v-for="(item, idx) in items" :key="idx" class="news-card">
+              <div class="card-header">
+                <span class="card-num">{{ idx + 1 }}</span>
+                <span class="card-title">
+                  <a :href="item.link" target="_blank" rel="noopener">{{ item.title }}</a>
+                </span>
+              </div>
+              <div class="card-summary">{{ item.ai_summary || item.summary }}</div>
+              <div class="card-footer">
+                <span class="card-source">{{ item.source }}</span>
+                <span v-if="item.merged_sources && item.merged_sources.length > 1" class="card-source" style="opacity:.65">
+                  +{{ item.merged_sources.length - 1 }} 来源
+                </span>
+                <span class="card-keywords">
+                  <span v-for="kw in (item.keywords || []).slice(0,4)" :key="kw" class="tag">{{ kw }}</span>
+                </span>
+                <a :href="item.link" target="_blank" rel="noopener" class="card-link-icon" :title="item.link">&#8599;</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="closing-card" v-if="data.closing">{{ data.closing }}</div>
+        <div class="footer">
+          <p>由 AI 自动生成 · 每日更新</p>
+          <p style="margin-top:4px;opacity:.6;">AI Daily Brief · {{ data.target_date }}</p>
+        </div>
+      </div>
+    </template>
+  </div>
+  <script>
+    const CATEGORY_COLORS = {
+      '模型发布': ['#e17055', '#d63031'],
+      '产品动态': ['#00b894', '#00cec9'],
+      '研究进展': ['#6c5ce7', '#a29bfe'],
+      '工具框架': ['#0984e3', '#74b9ff'],
+      '融资并购': ['#fdcb6e', '#e17055'],
+      '行业事件': ['#636e72', '#b2bec3'],
+    };
+    const { createApp } = Vue;
+    createApp({
+      data() {
+        return { data: null, loading: true, error: null };
+      },
+      async mounted() {
+        try {
+          const res = await fetch('data.json');
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          this.data = await res.json();
+        } catch (e) {
+          this.error = e.message;
+        } finally {
+          this.loading = false;
+        }
+      },
+      methods: {
+        catColor(category, idx) {
+          const c = CATEGORY_COLORS[category];
+          if (!c) return '#636e72';
+          return c[idx] || c[0];
+        },
+      },
+    }).mount('#app');
+  </script>
+</body>
+</html>
