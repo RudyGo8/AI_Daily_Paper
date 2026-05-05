@@ -18,7 +18,7 @@ class NewsSummarizer:
     def __init__(self, llm_client: LLMClient, prompt_template: str = "") -> None:
         self.llm_client = llm_client
         self.prompt_template = prompt_template or (
-            "请将以下资讯总结为2-3句中文，突出事实与影响。"
+            "请将以下资讯总结为约150字的中文摘要，突出事实与影响。"
         )
 
     def summarize_item(self, item: NewsItem) -> str:

@@ -106,9 +106,10 @@ class FeishuBotPublisher:
     def _build_category_sections(
         self,
         article: DailyArticle,
-        max_categories: int = 4,
-        max_items_per_category: int = 2,
+        max_categories: int = 99,
+        max_items_per_category: int = 99,
     ) -> list[dict]:
+        """生成分类板块，默认展示全部分类和全部条目，不再截断。"""
         sections: list[dict] = []
         added_categories = 0
 
@@ -122,7 +123,7 @@ class FeishuBotPublisher:
             for item in items[:max_items_per_category]:
                 title = self._shorten(item.title, 72)
                 title_link = f"[{self._escape(title)}]({item.link})"
-                summary = self._shorten(item.ai_summary or item.summary, 110)
+                summary = self._shorten(item.ai_summary or item.summary, 150)
                 source_note = self._source_note(item)
                 extra = f" 来源：{self._escape(source_note)}" if source_note else ""
                 lines.append(f"- {title_link}")
@@ -153,6 +154,11 @@ class FeishuBotPublisher:
         clean = " ".join((text or "").split())
         if len(clean) <= limit:
             return clean
+        # 在 limit 内找到最后一个句子结束标点，避免截断时句子不完整
+        truncated = clean[:limit]
+        last_period = max(truncated.rfind("。"), truncated.rfind("！"), truncated.rfind("？"))
+        if last_period >= limit // 2:
+            return clean[: last_period + 1] + "…"
         return clean[: limit - 1].rstrip() + "…"
 
     @staticmethod
