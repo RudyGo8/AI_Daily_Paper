@@ -1,3 +1,12 @@
+"""RSS 抓取模块：从 RSS/Atom feed 下载并解析为 NewsItem 列表。
+
+支持双重解析策略：
+  1. feedparser 库（优先，处理各种 RSS/Atom 变体）
+  2. xml.etree.ElementTree（纯标准库 fallback，仅解析标准 RSS 2.0）
+
+HTTP 下载同样双轨：requests（优先）→ urllib（fallback）。
+"""
+
 from __future__ import annotations
 
 import logging
@@ -21,6 +30,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class RSSFetcher:
+    """RSS 抓取器，负责下载和解析单个 RSS 源。"""
     def __init__(self, timeout: int = 20) -> None:
         self.timeout = timeout
 

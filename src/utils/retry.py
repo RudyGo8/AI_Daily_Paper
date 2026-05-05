@@ -1,3 +1,5 @@
+"""重试装饰器：在指定异常发生时自动重试函数调用。"""
+
 from __future__ import annotations
 
 import functools
@@ -15,6 +17,7 @@ def retry(
     delay_seconds: float = 1.0,
     exceptions: tuple[type[Exception], ...] = (Exception,),
 ) -> Callable[[F], F]:
+    """装饰器工厂：返回一个在异常时自动重试的装饰器。"""
     def decorator(func: F) -> F:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:

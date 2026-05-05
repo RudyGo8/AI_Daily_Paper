@@ -1,3 +1,5 @@
+"""\u5173\u952e\u8bcd\u63d0\u53d6\u6a21\u5757\uff1a\u57fa\u4e8e\u8bcd\u9891\u7edf\u8ba1\u4ece\u65b0\u95fb\u6807\u9898\u548c\u6458\u8981\u4e2d\u63d0\u53d6\u5173\u952e\u8bcd\u3002"""
+
 from __future__ import annotations
 
 import re
@@ -9,6 +11,7 @@ TOKEN_RE = re.compile(r"[A-Za-z][A-Za-z0-9\-\+]{1,}|[\u4e00-\u9fff]{2,}")
 
 
 class KeywordExtractor:
+    """\u57fa\u4e8e\u8bcd\u9891\u7684\u7b80\u5355\u5173\u952e\u8bcd\u63d0\u53d6\u5668\uff0c\u6309\u51fa\u73b0\u9891\u6b21\u6392\u5e8f\u8fd4\u56de top-N\u3002"""
     def __init__(self, max_keywords: int = 6, stopwords: set[str] | None = None) -> None:
         self.max_keywords = max_keywords
         self.stopwords = stopwords or {

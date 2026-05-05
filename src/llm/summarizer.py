@@ -1,3 +1,8 @@
+"""AI 摘要模块：调用 LLM 为每条新闻生成 2-3 句中文摘要。
+
+当 LLM 不可用时，降级为模板拼接（来源 + 标题 + 原文摘要）。
+"""
+
 from __future__ import annotations
 
 import re
@@ -9,6 +14,7 @@ SPACE_RE = re.compile(r"\s+")
 
 
 class NewsSummarizer:
+    """调用 LLM 对新闻条目进行摘要。"""
     def __init__(self, llm_client: LLMClient, prompt_template: str = "") -> None:
         self.llm_client = llm_client
         self.prompt_template = prompt_template or (

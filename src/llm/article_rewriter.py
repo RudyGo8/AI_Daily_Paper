@@ -1,3 +1,9 @@
+"""文章改写模块：调用 LLM 生成日报的导语和收尾段落。
+
+导语用于微信风格公众号开篇，收尾用于文末关注引导。
+LLM 不可用时使用规则模板生成统计性导语和标准收尾。
+"""
+
 from __future__ import annotations
 
 from collections import Counter
@@ -8,6 +14,7 @@ from src.models.schemas import NewsItem
 
 
 class ArticleRewriter:
+    """使用 LLM 重写日报的导语和收尾段落。"""
     def __init__(
         self,
         llm_client: LLMClient,

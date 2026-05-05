@@ -1,3 +1,9 @@
+"""海报图渲染模块：使用 Pillow 生成 AI 日报信息海报。
+
+海报包含：标题区、日期、分类板块（每类显示 top-N 条目摘要）、一句话总结。
+使用 Windows 系统中文字体，不可用时回退到 Pillow 默认字体。
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -15,12 +21,14 @@ from src.models.schemas import DailyArticle, NewsItem
 
 @dataclass
 class PosterSection:
+    """海报中的一个内容板块。"""
     index: int
     title: str
     bullets: list[str]
 
 
 class PosterRenderer:
+    """生成 AI 日报信息海报。"""
     CATEGORY_TITLES = {
         "模型发布": "模型动态",
         "产品动态": "产品更新",

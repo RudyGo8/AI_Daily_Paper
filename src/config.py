@@ -1,3 +1,9 @@
+"""配置加载模块：从 .env 文件和环境变量中读取所有项目配置。
+
+Settings 数据类是全局配置的唯一入口，通过 load_settings() 创建。
+支持 .env 文件自动加载、YAML 配置文件读取、布尔值字符串转换。
+"""
+
 from __future__ import annotations
 
 import os
@@ -37,6 +43,7 @@ def _require_yaml() -> Any:
 
 
 def load_yaml(path: Path) -> dict[str, Any]:
+    """安全加载 YAML 配置文件，返回字典。文件不存在时抛出异常。"""
     yaml_module = _require_yaml()
     if not path.exists():
         raise FileNotFoundError(f"Config file not found: {path}")
@@ -46,6 +53,7 @@ def load_yaml(path: Path) -> dict[str, Any]:
 
 @dataclass
 class Settings:
+    """项目的全局配置，所有字段从环境变量或默认值初始化。"""
     project_root: Path
     env: str
     log_level: str
@@ -83,6 +91,7 @@ class Settings:
 
 
 def load_settings(project_root: Path | None = None) -> Settings:
+    """加载所有配置，返回 Settings 实例。自动加载项目根目录的 .env 文件。"""
     root = (project_root or Path(__file__).resolve().parent.parent).resolve()
     _load_dotenv(root / ".env")
 
@@ -115,10 +124,10 @@ def load_settings(project_root: Path | None = None) -> Settings:
             os.getenv("DEDUP_SIMILARITY_THRESHOLD", "0.88")
         ),
         max_items_per_day=int(os.getenv("MAX_ITEMS_PER_DAY", "50")),
-        llm_provider=os.getenv("LLM_PROVIDER", "openai_compatible"),
-        llm_base_url=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"),
+        llm_provider=os.getenv("LLM_PROVIDER"),
+        llm_base_url=os.getenv("LLM_BASE_URL"),
         llm_api_key=os.getenv("LLM_API_KEY", ""),
-        llm_model=os.getenv("LLM_MODEL", "gpt-4o-mini"),
+        llm_model=os.getenv("LLM_MODEL"),
         llm_timeout=int(os.getenv("LLM_TIMEOUT", "60")),
         feishu_enabled=_str_to_bool(os.getenv("FEISHU_ENABLED"), default=False),
         feishu_webhook_url=os.getenv("FEISHU_WEBHOOK_URL", ""),

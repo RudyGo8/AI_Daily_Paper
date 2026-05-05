@@ -1,3 +1,5 @@
+"""Markdown 渲染模块：将分类后的新闻数据渲染为 Markdown 格式的日报文章。"""
+
 from __future__ import annotations
 
 from datetime import date
@@ -6,6 +8,7 @@ from src.models.schemas import NewsItem
 
 
 class MarkdownRenderer:
+    """将 DailyArticle 数据渲染为 Markdown 文本。"""
     def render(
         self,
         target_date: date,

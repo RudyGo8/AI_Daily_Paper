@@ -1,3 +1,8 @@
+"""标题生成模块：调用 LLM 生成日报的微信公众号标题和摘要语。
+
+LLM 不可用时，降级为类别统计 + 日期组合的模板标题。
+"""
+
 from __future__ import annotations
 
 from collections import Counter
@@ -8,6 +13,7 @@ from src.models.schemas import NewsItem
 
 
 class TitleGenerator:
+    """使用 LLM 生成日报标题和摘要。"""
     def __init__(
         self,
         llm_client: LLMClient,

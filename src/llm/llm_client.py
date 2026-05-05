@@ -1,3 +1,12 @@
+"""LLM 客户端模块：封装 OpenAI 兼容 API 调用。
+
+特点：
+  - 支持任意 OpenAI 兼容的 API 端点（OpenAI、阿里云 DashScope、本地部署等）
+  - 双轨 HTTP：requests（优先）→ urllib（fallback）
+  - API key 不可用时自动降级为 [fallback] 前缀文本
+  - 调用失败不抛异常，返回 fallback 以保证 Pipeline 不中断
+"""
+
 from __future__ import annotations
 
 import json
@@ -17,6 +26,7 @@ LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class LLMConfig:
+    """LLM 连接配置。"""
     provider: str = "openai_compatible"
     base_url: str = "https://api.openai.com/v1"
     api_key: str = ""
@@ -25,6 +35,7 @@ class LLMConfig:
 
 
 class LLMClient:
+    """OpenAI 兼容协议的大模型客户端，支持优雅降级。"""
     FALLBACK_PREFIX = "[fallback]"
 
     def __init__(self, config: LLMConfig) -> None:
@@ -37,6 +48,7 @@ class LLMClient:
         temperature: float = 0.3,
         max_tokens: int = 600,
     ) -> str:
+        """调用 LLM 完成请求，失败或无 API key 时自动降级为 fallback。"""
         if not self.config.api_key:
             return self._fallback(prompt)
 
@@ -119,6 +131,7 @@ class LLMClient:
 
     @classmethod
     def is_fallback_response(cls, text: str) -> bool:
+        """判断是否为降级响应，供调用方决定是否使用备用逻辑。"""
         return text.strip().startswith(cls.FALLBACK_PREFIX)
 
     @staticmethod

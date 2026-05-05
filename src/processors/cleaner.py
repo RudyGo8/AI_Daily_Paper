@@ -1,3 +1,8 @@
+"""内容清洗模块：去除 HTML 标签、解码实体、规范化空白字符。
+
+使用 BeautifulSoup 作为主解析器，当库不可用时回退到正则表达式。
+"""
+
 from __future__ import annotations
 
 import html
@@ -15,6 +20,7 @@ SPACE_RE = re.compile(r"\s+")
 
 
 class ContentCleaner:
+    """清洗 RSS 条目中的 HTML 标记和转义字符，输出纯文本。"""
     def __init__(self, max_summary_chars: int = 1000) -> None:
         self.max_summary_chars = max_summary_chars
 

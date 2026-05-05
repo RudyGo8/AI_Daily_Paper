@@ -1,3 +1,5 @@
+"""文件操作工具函数。"""
+
 from __future__ import annotations
 
 import json
@@ -6,6 +8,7 @@ from typing import Any
 
 
 def ensure_dir(path: Path) -> None:
+    """确保目录存在，不存在则递归创建。"""
     path.mkdir(parents=True, exist_ok=True)
 
 

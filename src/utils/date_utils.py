@@ -1,3 +1,5 @@
+"""日期时间工具函数：解析、时区转换、日期比较。"""
+
 from __future__ import annotations
 
 from datetime import date, datetime, timezone

@@ -1,3 +1,16 @@
+"""
+AI 日报自动生成系统 — 主 Pipeline 入口。
+
+流程概览：
+  RSS 源获取 → 日期过滤 → 内容清洗 → 去重合并 → 分类 → 关键词提取
+  → AI 摘要 → AI 写标题/导语/收尾 → Markdown/HTML 渲染 → 飞书推送
+
+使用方式:
+  python -m src.main                  # 处理当天资讯
+  python -m src.main --date 2026-05-04  # 处理指定日期
+  python -m src.main --dry-run        # 调试模式（不真正推送飞书）
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -32,6 +45,7 @@ def _group_by_category(
     items: list[NewsItem],
     categories_config: dict[str, Any],
 ) -> dict[str, list[NewsItem]]:
+    """将已分类的新闻条目按类别分组，保持 categories.yaml 中定义的顺序。"""
     category_map = categories_config.get("categories", categories_config)
     ordered = {name: [] for name in category_map.keys()}
 
@@ -44,6 +58,7 @@ def _group_by_category(
 
 
 def _build_empty_article(target_date: date) -> DailyArticle:
+    """当今日无符合条件的新闻时，生成一篇空日报占位文章。"""
     markdown_content = (
         f"# AI 资讯日报（{target_date.isoformat()}）\n\n"
         "今日暂无符合条件的 AI 资讯，建议检查 RSS 源可用性或放宽筛选条件。\n"
@@ -69,6 +84,10 @@ def run_pipeline(
     dry_run: bool = True,
     max_items: int | None = None,
 ) -> dict[str, Any]:
+    """执行完整的日报生成流水线，返回处理报告。
+
+    各阶段按序执行：抓取 → 清洗 → 去重 → 分类 → AI 处理 → 渲染 → 发布。
+    """
     settings = load_settings()
     logger = setup_logger(settings.log_level)
 
@@ -229,6 +248,7 @@ def run_pipeline(
 
 
 def _build_arg_parser() -> argparse.ArgumentParser:
+    """构建命令行参数解析器。"""
     parser = argparse.ArgumentParser(description="AI Daily Paper Generator")
     parser.add_argument(
         "--date",
@@ -251,6 +271,7 @@ def _build_arg_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
+    """CLI 入口：解析参数后触发 run_pipeline 并打印 JSON 报告。"""
     args = _build_arg_parser().parse_args()
     target = parse_target_date(args.date)
     report = run_pipeline(

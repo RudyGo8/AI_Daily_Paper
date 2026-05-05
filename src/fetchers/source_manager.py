@@ -1,3 +1,9 @@
+"""RSS 源管理模块：管理和遍历所有 RSS 数据源。
+
+SourceManager 从 sources.yaml 加载源列表，批量调用 RSSFetcher 抓取。
+filter_items_by_date 按目标日期筛选抓取结果，确保只处理指定日期的新闻。
+"""
+
 from __future__ import annotations
 
 import logging
@@ -13,11 +19,13 @@ LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class RSSSource:
+    """单个 RSS 源：名称 + 订阅地址。"""
     name: str
     url: str
 
 
 class SourceManager:
+    """管理 RSS 源列表，批量抓取并汇总。"""
     def __init__(self, sources: list[RSSSource]) -> None:
         self.sources = sources
 

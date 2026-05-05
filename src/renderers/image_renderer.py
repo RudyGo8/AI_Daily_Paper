@@ -1,3 +1,5 @@
+"""封面图渲染模块：使用 Pillow 生成日报封面图片。"""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -11,6 +13,7 @@ except ImportError:  # pragma: no cover - optional dependency path
 
 
 class ImageRenderer:
+    """生成日报封面 PNG 图片。"""
     def __init__(self, width: int = 900, height: int = 500) -> None:
         self.width = width
         self.height = height

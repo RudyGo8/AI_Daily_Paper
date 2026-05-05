@@ -1,3 +1,12 @@
+"""话题分类模块：将新闻自动分入 6 大 AI 行业类别。
+
+分类策略：
+  1. YAML 关键词匹配（categories.yaml）：body 命中 +2 分，title 命中 +3 分
+  2. 内置正则规则匹配：正则命中按权重加分，title 命中额外 +2
+  3. 优先级裁决：得分相同时按 CATEGORY_PRIORITY 顺序选取
+  4. 所有类别得分均为 0 时回退到默认类别（行业事件）
+"""
+
 from __future__ import annotations
 
 import re
@@ -7,6 +16,7 @@ from src.models.schemas import NewsItem
 
 
 class TopicClassifier:
+    """基于关键词+正则的新闻话题分类器。"""
     CATEGORY_PRIORITY = [
         "融资并购",
         "研究进展",

@@ -1,3 +1,9 @@
+"""飞书机器人发布模块：通过 Webhook 将日报推送为飞书群消息卡片。
+
+消息格式为飞书消息卡片（interactive），包含标题 banner、各分类板块和多条新闻链接。
+支持 dry-run 模式（仅打印预览，不实际发送）和自动重试（最多 3 次）。
+"""
+
 from __future__ import annotations
 
 import json
@@ -13,6 +19,7 @@ from src.utils.retry import retry
 
 
 class FeishuBotPublisher:
+    """通过飞书 Webhook 推送日报卡片消息。"""
     def __init__(
         self,
         webhook_url: str,

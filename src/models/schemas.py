@@ -1,3 +1,9 @@
+"""数据模型：定义整个 Pipeline 中流通的核心数据结构。
+
+NewsItem — 单条新闻，贯穿抓取→清洗→去重→分类→摘要全流程。
+DailyArticle — 最终生成的日报文章，包含渲染内容和发布所需的所有字段。
+"""
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
@@ -7,6 +13,7 @@ from typing import Any
 
 @dataclass
 class NewsItem:
+    """单条 AI 资讯，从 RSS 抓取后逐步填充各字段。"""
     source: str
     title: str
     link: str
@@ -38,6 +45,7 @@ class NewsItem:
 
 @dataclass
 class DailyArticle:
+    """最终生成的日报文章，包含所有渲染和发布所需数据。"""
     target_date: date
     title: str
     digest: str

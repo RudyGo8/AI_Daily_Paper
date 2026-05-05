@@ -1,3 +1,14 @@
+"""新闻去重与合并模块。
+
+采用多维度去重策略：
+  1. 链接完全相同 → 直接去重
+  2. 标题 SequenceMatcher 相似度 ≥ 阈值 → 判定重复
+  3. 发布时间差 > 72h → 不判定重复（不同天的同类新闻）
+  4. Token 重叠率分析：标题 token、正文 token、模型名共存、机构名共存
+
+重复条目不会丢弃，而是以 merge 方式合并来源、链接和标题信息。
+"""
+
 from __future__ import annotations
 
 import re
@@ -90,6 +101,7 @@ def _extract_model_tokens(text: str) -> set[str]:
 
 
 class NewsDeduplicator:
+    """新闻去重器：检测并合并来自不同源的同主题新闻。"""
     def __init__(self, similarity_threshold: float = 0.88) -> None:
         self.similarity_threshold = similarity_threshold
 

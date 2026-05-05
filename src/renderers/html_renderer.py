@@ -1,3 +1,10 @@
+"""HTML 渲染模块：将 Markdown 日报转换为带样式的 HTML 页面。
+
+支持双轨转换：
+  1. markdown 库 + BeautifulSoup 清洗（完整功能）
+  2. 手写逐行解析器 + HTML 实体编码（纯标准库 fallback）
+"""
+
 from __future__ import annotations
 
 from html import escape
@@ -15,6 +22,7 @@ except ImportError:  # pragma: no cover - optional dependency path
 
 
 class HtmlRenderer:
+    """将 Markdown 日报转换为带微信风格样式的 HTML 页面。"""
     def render(
         self,
         markdown_text: str | None = None,
