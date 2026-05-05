@@ -89,7 +89,7 @@
       background: var(--card-bg);
       border-radius: var(--radius);
       padding: 24px 28px;
-      margin-bottom: 28px;
+      margin: 0 10% 28px 10%;
       box-shadow: var(--shadow);
       border-left: 4px solid #6c5ce7;
       font-size: 16px;
@@ -104,7 +104,7 @@
     .category-title {
       font-size: 19px;
       font-weight: 700;
-      margin-bottom: 16px;
+      margin: 0 10% 16px 10%;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -121,13 +121,16 @@
       margin-left: auto;
     }
 
-    /* Grid — 探险布局：两侧留白 10%，卡片间距 5% */
+    /* Grid — 双栏：左右 10% 留白，卡片间距 5% */
     .category-grid {
       display: grid;
-      grid-template-columns: 10% 1fr 5% 1fr 10%;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 5%;
+      margin: 0 10%;
     }
-    .category-grid .news-card:nth-child(odd)  { grid-column: 2; }
-    .category-grid .news-card:nth-child(even) { grid-column: 4; }
+    .category-grid .news-card:only-child {
+      grid-column: 1 / -1;
+    }
 
     /* Card */
     .news-card {
@@ -217,12 +220,12 @@
       background: linear-gradient(135deg, #fafaff, #f5f3ff);
       border-radius: var(--radius);
       padding: 24px 28px;
+      margin: 0 10% 32px 10%;
       text-align: center;
       color: var(--text-secondary);
       font-size: 15px;
       box-shadow: var(--shadow);
       border: 1px solid #e8e0ff;
-      margin-bottom: 32px;
     }
 
     /* Footer */
@@ -258,12 +261,8 @@
     @media (max-width: 768px) {
       .header { padding: 36px 16px 28px; }
       .container { padding: 16px 14px 48px; }
-      .category-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-      .category-grid .news-card:nth-child(odd),
-      .category-grid .news-card:nth-child(even) { grid-column: auto; }
+      .intro-card, .category-title, .category-grid, .closing-card { margin-left: 0; margin-right: 0; }
+      .category-grid { grid-template-columns: 1fr; gap: 10px; }
       .news-card { padding: 16px 18px; }
       .news-card .card-summary,
       .news-card .card-footer { padding-left: 28px; }
