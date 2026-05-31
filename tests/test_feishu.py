@@ -27,13 +27,8 @@ def _build_article() -> DailyArticle:
         target_date=date(2026, 4, 24),
         title="AI Daily Brief",
         digest="今日聚焦模型、产品与工具更新。",
-        intro="Intro",
-        closing="Closing",
-        markdown_content="# test",
-        html_content="<p>test</p>",
         categories={"模型发布": [item]},
         total_items=1,
-        image_paths=["F:/demo/poster.png"],
     )
 
 
@@ -56,7 +51,6 @@ def test_feishu_publisher_builds_interactive_card() -> None:
     section_text = payload["card"]["elements"][-1]["text"]["content"]
     assert "**模型发布**" in section_text
     assert "OpenAI News / TechCrunch AI" in section_text
-    assert "F:/demo/poster.png" not in section_text
 
 
 def test_feishu_publisher_dry_run_returns_card_preview() -> None:

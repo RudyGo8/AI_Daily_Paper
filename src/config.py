@@ -64,14 +64,6 @@ class Settings:
     categories_file: Path
     prompt_templates_file: Path
 
-    data_dir: Path
-    data_raw_dir: Path
-    data_processed_dir: Path
-    data_output_dir: Path
-    docs_dir: Path
-    docs_articles_dir: Path
-    docs_images_dir: Path
-
     rss_timeout: int
     dedup_similarity_threshold: float
     max_items_per_day: int
@@ -86,9 +78,6 @@ class Settings:
     feishu_webhook_url: str
     feishu_message_title: str
 
-    generate_cover_image: bool
-    generate_article_images: bool
-
 
 def load_settings(project_root: Path | None = None) -> Settings:
     """加载所有配置，返回 Settings 实例。自动加载项目根目录的 .env 文件。"""
@@ -100,9 +89,6 @@ def load_settings(project_root: Path | None = None) -> Settings:
     timezone_value = os.getenv("TIMEZONE", "Asia/Shanghai")
 
     config_dir = root / os.getenv("CONFIG_DIR", "configs")
-    data_dir = root / os.getenv("DATA_DIR", "data")
-    docs_dir = root / os.getenv("DOCS_DIR", "docs")
-
     return Settings(
         project_root=root,
         env=env,
@@ -112,32 +98,20 @@ def load_settings(project_root: Path | None = None) -> Settings:
         sources_file=config_dir / "sources.yaml",
         categories_file=config_dir / "categories.yaml",
         prompt_templates_file=config_dir / "prompt_templates.yaml",
-        data_dir=data_dir,
-        data_raw_dir=data_dir / "raw",
-        data_processed_dir=data_dir / "processed",
-        data_output_dir=data_dir / "output",
-        docs_dir=docs_dir,
-        docs_articles_dir=docs_dir / "articles",
-        docs_images_dir=docs_dir / "images",
         rss_timeout=int(os.getenv("RSS_TIMEOUT", "20")),
         dedup_similarity_threshold=float(
             os.getenv("DEDUP_SIMILARITY_THRESHOLD", "0.88")
         ),
         max_items_per_day=int(os.getenv("MAX_ITEMS_PER_DAY", "50")),
-        llm_provider=os.getenv("LLM_PROVIDER"),
-        llm_base_url=os.getenv("LLM_BASE_URL"),
+        llm_provider=os.getenv("LLM_PROVIDER", "dashscope"),
+        llm_base_url=os.getenv(
+            "LLM_BASE_URL",
+            "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        ),
         llm_api_key=os.getenv("LLM_API_KEY", ""),
-        llm_model=os.getenv("LLM_MODEL"),
+        llm_model=os.getenv("LLM_MODEL", "qwen3.6-flash"),
         llm_timeout=int(os.getenv("LLM_TIMEOUT", "60")),
         feishu_enabled=_str_to_bool(os.getenv("FEISHU_ENABLED"), default=False),
         feishu_webhook_url=os.getenv("FEISHU_WEBHOOK_URL", ""),
         feishu_message_title=os.getenv("FEISHU_MESSAGE_TITLE", "AI 日报"),
-        generate_cover_image=_str_to_bool(
-            os.getenv("GENERATE_COVER_IMAGE"),
-            default=False,
-        ),
-        generate_article_images=_str_to_bool(
-            os.getenv("GENERATE_ARTICLE_IMAGES"),
-            default=False,
-        ),
     )

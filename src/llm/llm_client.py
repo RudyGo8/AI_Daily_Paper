@@ -27,10 +27,10 @@ LOGGER = logging.getLogger(__name__)
 @dataclass
 class LLMConfig:
     """LLM 连接配置。"""
-    provider: str = "openai_compatible"
-    base_url: str = "https://api.openai.com/v1"
+    provider: str = "dashscope"
+    base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
     api_key: str = ""
-    model: str = "gpt-4o-mini"
+    model: str = "qwen3.6-flash"
     timeout: int = 60
 
 

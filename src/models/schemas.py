@@ -49,25 +49,15 @@ class DailyArticle:
     target_date: date
     title: str
     digest: str
-    intro: str
-    closing: str
-    markdown_content: str
-    html_content: str
     categories: dict[str, list[NewsItem]]
     total_items: int
-    cover_image_path: str | None = None
-    image_paths: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "target_date": self.target_date.isoformat(),
             "title": self.title,
             "digest": self.digest,
-            "intro": self.intro,
-            "closing": self.closing,
             "total_items": self.total_items,
-            "cover_image_path": self.cover_image_path,
-            "image_paths": self.image_paths,
             "categories": {
                 category: [item.to_dict() for item in items]
                 for category, items in self.categories.items()

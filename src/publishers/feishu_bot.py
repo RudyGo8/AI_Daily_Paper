@@ -1,8 +1,4 @@
-"""飞书机器人发布模块：通过 Webhook 将日报推送为飞书群消息卡片。
-
-消息格式为飞书消息卡片（interactive），包含标题 banner、各分类板块和多条新闻链接。
-支持 dry-run 模式（仅打印预览，不实际发送）和自动重试（最多 3 次）。
-"""
+"""Publish the daily AI brief as a Feishu interactive card."""
 
 from __future__ import annotations
 
@@ -19,7 +15,6 @@ from src.utils.retry import retry
 
 
 class FeishuBotPublisher:
-    """通过飞书 Webhook 推送日报卡片消息。"""
     def __init__(
         self,
         webhook_url: str,
@@ -109,19 +104,15 @@ class FeishuBotPublisher:
         max_categories: int = 99,
         max_items_per_category: int = 99,
     ) -> list[dict]:
-        """生成分类板块，默认展示全部分类和全部条目，不再截断。"""
         sections: list[dict] = []
-        added_categories = 0
 
-        for category, items in article.categories.items():
+        for category, items in list(article.categories.items())[:max_categories]:
             if not items:
                 continue
-            if added_categories >= max_categories:
-                break
 
             lines = [f"**{self._escape(category)}**"]
             for item in items[:max_items_per_category]:
-                title = self._shorten(item.title, 72)
+                title = self._shorten(self._display_title(item), 72)
                 title_link = f"[{self._escape(title)}]({item.link})"
                 summary = self._shorten(item.ai_summary or item.summary, 150)
                 source_note = self._source_note(item)
@@ -138,9 +129,14 @@ class FeishuBotPublisher:
                     },
                 }
             )
-            added_categories += 1
 
         return sections
+
+    @staticmethod
+    def _display_title(item: NewsItem) -> str:
+        if (item.ai_summary or "").startswith("【模型摘要未生成】"):
+            return f"{item.category or 'AI 资讯'}：来自 {item.source} 的原文链接"
+        return item.title
 
     @staticmethod
     def _source_note(item: NewsItem) -> str:
@@ -154,9 +150,12 @@ class FeishuBotPublisher:
         clean = " ".join((text or "").split())
         if len(clean) <= limit:
             return clean
-        # 在 limit 内找到最后一个句子结束标点，避免截断时句子不完整
         truncated = clean[:limit]
-        last_period = max(truncated.rfind("。"), truncated.rfind("！"), truncated.rfind("？"))
+        last_period = max(
+            truncated.rfind("。"),
+            truncated.rfind("；"),
+            truncated.rfind("，"),
+        )
         if last_period >= limit // 2:
             return clean[: last_period + 1] + "…"
         return clean[: limit - 1].rstrip() + "…"

@@ -24,5 +24,5 @@ def test_summarizer_sets_ai_summary() -> None:
         summary="This is a detailed summary for testing.",
     )
     out = summarizer.summarize_items([item])
-    assert "Example title" in out[0].ai_summary
-    assert "核心内容" in out[0].ai_summary
+    assert "模型摘要未生成" in out[0].ai_summary
+    assert "Example" in out[0].ai_summary

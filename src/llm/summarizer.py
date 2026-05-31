@@ -41,8 +41,10 @@ class NewsSummarizer:
 
     @staticmethod
     def _fallback_summary(item: NewsItem) -> str:
-        base = item.summary or item.content or item.title
-        base = SPACE_RE.sub(" ", base).strip().rstrip(".")
-        if len(base) > 150:
-            base = base[:147].rstrip() + "..."
-        return f"{item.source} 发布动态：{item.title}。核心内容：{base}"
+        category = item.category or "AI 行业"
+        keywords = "、".join(item.keywords[:4])
+        keyword_text = f"，关键词：{keywords}" if keywords else ""
+        return (
+            f"【模型摘要未生成】{item.source} 有一条{category}相关资讯"
+            f"{keyword_text}。请检查 DashScope 连接后重新生成，以获得完整中文摘要。"
+        )
