@@ -91,13 +91,12 @@ def _tokenize_text(text: str) -> set[str]:
     return tokens
 
 
-def _extract_model_tokens(text: str) -> set[str]:
-    model_tokens: set[str] = set()
-    for raw_token in TOKEN_RE.findall(text.lower()):
-        token = raw_token.replace(".", "").replace("-", "")
-        if any(char.isdigit() for char in token) and any(char.isalpha() for char in token):
-            model_tokens.add(token)
-    return model_tokens
+def _model_tokens(text: str) -> set[str]:
+    return {
+        token
+        for token in _tokenize_text(text)
+        if any(char.isdigit() for char in token) and any(char.isalpha() for char in token)
+    }
 
 
 class NewsDeduplicator:
@@ -134,9 +133,6 @@ class NewsDeduplicator:
         return unique
 
     def _is_duplicate(self, left: NewsItem, right: NewsItem) -> bool:
-        if _normalize_link(left.link) == _normalize_link(right.link):
-            return True
-
         title_similarity = SequenceMatcher(
             None,
             _normalize_title(left.title),
@@ -152,8 +148,8 @@ class NewsDeduplicator:
         right_title_tokens = _tokenize_text(right.title)
         left_body_tokens = _tokenize_text(f"{left.title} {left.summary}")
         right_body_tokens = _tokenize_text(f"{right.title} {right.summary}")
-        left_model_tokens = _extract_model_tokens(left.title)
-        right_model_tokens = _extract_model_tokens(right.title)
+        left_model_tokens = _model_tokens(left.title)
+        right_model_tokens = _model_tokens(right.title)
 
         title_overlap = self._overlap_ratio(left_title_tokens, right_title_tokens)
         body_overlap = self._overlap_ratio(left_body_tokens, right_body_tokens)
@@ -187,14 +183,13 @@ class NewsDeduplicator:
         if secondary_score > primary_score:
             primary, secondary = right, left
 
-        merged_sources = list(dict.fromkeys(primary.merged_sources + secondary.merged_sources))
-        merged_links = list(dict.fromkeys(primary.merged_links + secondary.merged_links))
-        merged_titles = list(dict.fromkeys(primary.merged_titles + secondary.merged_titles))
-
-        primary.merged_sources = merged_sources
-        primary.merged_links = merged_links
-        primary.merged_titles = merged_titles
-        primary.cluster_size = len(merged_links) or len(merged_titles) or len(merged_sources)
+        primary.merged_sources = list(
+            dict.fromkeys(primary.merged_sources + secondary.merged_sources)
+        )
+        primary.merged_links = list(
+            dict.fromkeys(primary.merged_links + secondary.merged_links)
+        )
+        primary.cluster_size = len(primary.merged_links) or len(primary.merged_sources)
 
         if not primary.content and secondary.content:
             primary.content = secondary.content

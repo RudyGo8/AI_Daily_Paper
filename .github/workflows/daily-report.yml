@@ -33,7 +33,6 @@ jobs:
     timeout-minutes: 30
 
     env:
-      ENV: prod
       LOG_LEVEL: INFO
       TIMEZONE: Asia/Shanghai
 

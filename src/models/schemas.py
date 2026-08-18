@@ -6,9 +6,8 @@ DailyArticle — 最终生成的日报文章，包含渲染内容和发布所需
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from datetime import date, datetime
-from typing import Any
 
 
 @dataclass
@@ -20,13 +19,11 @@ class NewsItem:
     published_at: datetime
     summary: str
     content: str = ""
-    author: str = ""
     category: str = ""
     keywords: list[str] = field(default_factory=list)
     ai_summary: str = ""
     merged_sources: list[str] = field(default_factory=list)
     merged_links: list[str] = field(default_factory=list)
-    merged_titles: list[str] = field(default_factory=list)
     cluster_size: int = 1
 
     def __post_init__(self) -> None:
@@ -34,13 +31,6 @@ class NewsItem:
             self.merged_sources = [self.source]
         if not self.merged_links and self.link:
             self.merged_links = [self.link]
-        if not self.merged_titles and self.title:
-            self.merged_titles = [self.title]
-
-    def to_dict(self) -> dict[str, Any]:
-        payload = asdict(self)
-        payload["published_at"] = self.published_at.isoformat()
-        return payload
 
 
 @dataclass
@@ -51,15 +41,3 @@ class DailyArticle:
     digest: str
     categories: dict[str, list[NewsItem]]
     total_items: int
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "target_date": self.target_date.isoformat(),
-            "title": self.title,
-            "digest": self.digest,
-            "total_items": self.total_items,
-            "categories": {
-                category: [item.to_dict() for item in items]
-                for category, items in self.categories.items()
-            },
-        }

@@ -1,6 +1,6 @@
 """内容清洗模块：去除 HTML 标签、解码实体、规范化空白字符。
 
-使用 BeautifulSoup 作为主解析器，当库不可用时回退到正则表达式。
+使用 BeautifulSoup 解析（硬依赖）。
 """
 
 from __future__ import annotations
@@ -8,14 +8,10 @@ from __future__ import annotations
 import html
 import re
 
-try:
-    from bs4 import BeautifulSoup
-except ImportError:  # pragma: no cover - optional dependency path
-    BeautifulSoup = None
+from bs4 import BeautifulSoup
 
 from src.models.schemas import NewsItem
 
-TAG_RE = re.compile(r"<[^>]+>")
 SPACE_RE = re.compile(r"\s+")
 
 
@@ -25,16 +21,9 @@ class ContentCleaner:
         self.max_summary_chars = max_summary_chars
 
     def clean_text(self, text: str) -> str:
-        raw = text or ""
-        if BeautifulSoup is not None:
-            parsed = BeautifulSoup(raw, "html.parser")
-            raw = parsed.get_text(" ", strip=True)
-        else:
-            raw = TAG_RE.sub(" ", raw)
-
-        raw = html.unescape(raw)
-        raw = SPACE_RE.sub(" ", raw).strip()
-        return raw
+        parsed = BeautifulSoup(text or "", "html.parser")
+        raw = html.unescape(parsed.get_text(" ", strip=True))
+        return SPACE_RE.sub(" ", raw).strip()
 
     def clean_item(self, item: NewsItem) -> NewsItem:
         item.title = self.clean_text(item.title)

@@ -5,12 +5,8 @@
 
 from __future__ import annotations
 
-import re
-
 from src.llm.llm_client import LLMClient
 from src.models.schemas import NewsItem
-
-SPACE_RE = re.compile(r"\s+")
 
 
 class NewsSummarizer:
@@ -24,8 +20,6 @@ class NewsSummarizer:
     def summarize_item(self, item: NewsItem) -> str:
         prompt = (
             f"{self.prompt_template}\n\n"
-            # f"标题：{item.title}\n"
-            # f"来源：{item.source}\n"
             f"内容：{item.summary or item.content}\n"
             "输出："
         )

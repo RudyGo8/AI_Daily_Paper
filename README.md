@@ -14,16 +14,10 @@
 
 ## 安装
 
-推荐使用 `uv`：
+使用 `uv`（`--extra dev` 同时安装 pytest 等测试依赖）：
 
 ```powershell
-uv sync
-```
-
-或使用 `pip`：
-
-```powershell
-pip install -r requirements.txt
+uv sync --extra dev
 ```
 
 ## 配置
@@ -47,25 +41,42 @@ FEISHU_WEBHOOK_URL=https://open.feishu.cn/open-apis/bot/v2/hook/xxxx
 FEISHU_MESSAGE_TITLE=AI 日报
 ```
 
+配置优先级：**环境变量 > `.env` > 代码默认值**。本地由 `.env` 提供；CI 上不存在 `.env`，全部来自仓库 Secrets。
+
 ## 运行
 
 预览飞书卡片，不实际推送：
 
 ```powershell
-.\.venv\Scripts\python.exe -m src.main --date 2026-05-31 --dry-run --max-items 6
+uv run python -m src.main --date 2026-05-31 --dry-run --max-items 6
 ```
 
 正式推送：
 
 ```powershell
-.\.venv\Scripts\python.exe -m src.main --date 2026-05-31 --max-items 6
+uv run python -m src.main --date 2026-05-31 --max-items 6
 ```
 
 ## 测试
 
 ```powershell
-.\.venv\Scripts\python.exe -B -m pytest -q -p no:cacheprovider
+uv run python -B -m pytest -q -p no:cacheprovider
 ```
+
+## GitHub Actions 定时部署
+
+`.github/workflows/daily-report.yml` 每天 UTC 22:01（北京时间 06:01）自动运行，也可在 Actions 页面手动触发（支持指定日期、dry-run、条数上限）。
+
+需要在仓库 Settings → Secrets and variables → Actions 配置：
+
+| Secret | 说明 |
+|---|---|
+| `LLM_PROVIDER` / `LLM_BASE_URL` / `LLM_MODEL` | LLM 接入参数（OpenAI 兼容，默认 DashScope） |
+| `LLM_API_KEY` | DashScope（百炼）API key |
+| `FEISHU_WEBHOOK_URL` | 飞书群机器人 webhook |
+| `FEISHU_MESSAGE_TITLE` | 卡片标题前缀 |
+
+CI 环境没有 `.env`，以上 Secret 经 workflow 的 `env:` 块注入为环境变量，是线上唯一的配置来源。
 
 ## 结构
 
@@ -84,4 +95,5 @@ src/
   models/
   utils/
 tests/
+.github/workflows/daily-report.yml   # 每日定时推送
 ```

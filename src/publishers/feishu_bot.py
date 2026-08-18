@@ -2,13 +2,7 @@
 
 from __future__ import annotations
 
-import json
-from urllib.request import Request, urlopen
-
-try:
-    import requests
-except ImportError:  # pragma: no cover - optional dependency path
-    requests = None
+import requests
 
 from src.models.schemas import DailyArticle, NewsItem
 from src.utils.retry import retry
@@ -166,21 +160,10 @@ class FeishuBotPublisher:
 
     @retry(max_attempts=3, delay_seconds=1.0)
     def _post_json(self, payload: dict) -> dict:
-        if requests is not None:
-            response = requests.post(
-                self.webhook_url,
-                json=payload,
-                timeout=self.request_timeout,
-            )
-            response.raise_for_status()
-            return response.json()
-
-        request = Request(
+        response = requests.post(
             self.webhook_url,
-            data=json.dumps(payload).encode("utf-8"),
-            headers={"Content-Type": "application/json"},
-            method="POST",
+            json=payload,
+            timeout=self.request_timeout,
         )
-        with urlopen(request, timeout=self.request_timeout) as resp:
-            body = resp.read().decode("utf-8")
-            return json.loads(body)
+        response.raise_for_status()
+        return response.json()

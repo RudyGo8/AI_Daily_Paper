@@ -2,24 +2,17 @@
 
 特点：
   - 支持任意 OpenAI 兼容的 API 端点（OpenAI、阿里云 DashScope、本地部署等）
-  - 双轨 HTTP：requests（优先）→ urllib（fallback）
   - API key 不可用时自动降级为 [fallback] 前缀文本
   - 调用失败不抛异常，返回 fallback 以保证 Pipeline 不中断
 """
 
 from __future__ import annotations
 
-import json
 import logging
 from dataclasses import dataclass
-from urllib.error import HTTPError
 from urllib.parse import urljoin
-from urllib.request import Request, urlopen
 
-try:
-    import requests
-except ImportError:  # pragma: no cover - optional dependency path
-    requests = None
+import requests
 
 LOGGER = logging.getLogger(__name__)
 
@@ -90,39 +83,20 @@ class LLMClient:
             "Content-Type": "application/json",
         }
 
-        if requests is not None:
-            try:
-                response = requests.post(
-                    endpoint,
-                    headers=headers,
-                    json=payload,
-                    timeout=self.config.timeout,
-                )
-                response.raise_for_status()
-                return response.json()
-            except requests.HTTPError as exc:
-                detail = ""
-                if exc.response is not None:
-                    detail = exc.response.text.strip()
-                raise RuntimeError(
-                    f"HTTP error from {endpoint}: {detail or exc}"
-                ) from exc
-
-        request = Request(
-            endpoint,
-            data=json.dumps(payload).encode("utf-8"),
-            headers=headers,
-            method="POST",
-        )
         try:
-            with urlopen(request, timeout=self.config.timeout) as resp:
-                body = resp.read().decode("utf-8")
-                return json.loads(body)
-        except HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="ignore").strip()
-            raise RuntimeError(
-                f"HTTP error from {endpoint}: {detail or exc.reason}"
-            ) from exc
+            response = requests.post(
+                endpoint,
+                headers=headers,
+                json=payload,
+                timeout=self.config.timeout,
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.HTTPError as exc:
+            detail = ""
+            if exc.response is not None:
+                detail = exc.response.text.strip()
+            raise RuntimeError(f"HTTP error from {endpoint}: {detail or exc}") from exc
 
     def _uses_dashscope_compat(self) -> bool:
         base_url = self.config.base_url.lower()

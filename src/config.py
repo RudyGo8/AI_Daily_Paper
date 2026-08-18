@@ -11,10 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-try:
-    import yaml
-except ImportError:  # pragma: no cover - handled by runtime error path
-    yaml = None
+import yaml
 
 
 def _str_to_bool(value: str | None, default: bool = False) -> bool:
@@ -36,30 +33,20 @@ def _load_dotenv(dotenv_path: Path) -> None:
         os.environ.setdefault(key, value)
 
 
-def _require_yaml() -> Any:
-    if yaml is None:
-        raise RuntimeError("PyYAML is required. Install dependencies first.")
-    return yaml
-
-
 def load_yaml(path: Path) -> dict[str, Any]:
     """安全加载 YAML 配置文件，返回字典。文件不存在时抛出异常。"""
-    yaml_module = _require_yaml()
     if not path.exists():
         raise FileNotFoundError(f"Config file not found: {path}")
-    content = yaml_module.safe_load(path.read_text(encoding="utf-8"))
+    content = yaml.safe_load(path.read_text(encoding="utf-8"))
     return content or {}
 
 
 @dataclass
 class Settings:
     """项目的全局配置，所有字段从环境变量或默认值初始化。"""
-    project_root: Path
-    env: str
     log_level: str
     timezone: str
 
-    config_dir: Path
     sources_file: Path
     categories_file: Path
     prompt_templates_file: Path
@@ -84,17 +71,13 @@ def load_settings(project_root: Path | None = None) -> Settings:
     root = (project_root or Path(__file__).resolve().parent.parent).resolve()
     _load_dotenv(root / ".env")
 
-    env = os.getenv("ENV", "dev")
     log_level = os.getenv("LOG_LEVEL", "INFO")
     timezone_value = os.getenv("TIMEZONE", "Asia/Shanghai")
 
     config_dir = root / os.getenv("CONFIG_DIR", "configs")
     return Settings(
-        project_root=root,
-        env=env,
         log_level=log_level,
         timezone=timezone_value,
-        config_dir=config_dir,
         sources_file=config_dir / "sources.yaml",
         categories_file=config_dir / "categories.yaml",
         prompt_templates_file=config_dir / "prompt_templates.yaml",
