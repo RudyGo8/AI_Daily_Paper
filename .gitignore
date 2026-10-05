@@ -23,6 +23,7 @@ build/
 data/raw/
 data/processed/
 data/output/
+data/history/
 docs/articles/
 docs/images/
 

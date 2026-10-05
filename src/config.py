@@ -64,12 +64,23 @@ class Settings:
     feishu_enabled: bool
     feishu_webhook_url: str
     feishu_message_title: str
+    topics_file: Path
+    github_token: str
+    github_timeout: int
+    history_enabled: bool
+    history_dir: Path
+    history_retention_days: int
+    history_backend: str
+    history_branch: str
+    github_repository: str
+    github_state_token: str
 
 
 def load_settings(project_root: Path | None = None) -> Settings:
     """加载所有配置，返回 Settings 实例。自动加载项目根目录的 .env 文件。"""
     root = (project_root or Path(__file__).resolve().parent.parent).resolve()
-    _load_dotenv(root / ".env")
+    if _str_to_bool(os.getenv("LOAD_DOTENV"), default=True):
+        _load_dotenv(root / ".env")
 
     log_level = os.getenv("LOG_LEVEL", "INFO")
     timezone_value = os.getenv("TIMEZONE", "Asia/Shanghai")
@@ -86,15 +97,22 @@ def load_settings(project_root: Path | None = None) -> Settings:
             os.getenv("DEDUP_SIMILARITY_THRESHOLD", "0.88")
         ),
         max_items_per_day=int(os.getenv("MAX_ITEMS_PER_DAY", "50")),
-        llm_provider=os.getenv("LLM_PROVIDER", "dashscope"),
-        llm_base_url=os.getenv(
-            "LLM_BASE_URL",
-            "https://dashscope.aliyuncs.com/compatible-mode/v1",
-        ),
+        llm_provider=os.getenv("LLM_PROVIDER") or "dashscope",
+        llm_base_url=os.getenv("LLM_BASE_URL") or "https://dashscope.aliyuncs.com/compatible-mode/v1",
         llm_api_key=os.getenv("LLM_API_KEY", ""),
-        llm_model=os.getenv("LLM_MODEL", "qwen3.6-flash"),
+        llm_model=os.getenv("LLM_MODEL") or "qwen3.6-flash",
         llm_timeout=int(os.getenv("LLM_TIMEOUT", "60")),
         feishu_enabled=_str_to_bool(os.getenv("FEISHU_ENABLED"), default=False),
         feishu_webhook_url=os.getenv("FEISHU_WEBHOOK_URL", ""),
         feishu_message_title=os.getenv("FEISHU_MESSAGE_TITLE", "AI 日报"),
+        topics_file=config_dir / "topics.yaml",
+        github_token=os.getenv("GH_API_TOKEN", "") or os.getenv("GITHUB_TOKEN", ""),
+        github_timeout=int(os.getenv("GITHUB_TIMEOUT", "15")),
+        history_enabled=_str_to_bool(os.getenv("HISTORY_ENABLED"), default=True),
+        history_dir=root / os.getenv("HISTORY_DIR", "data/history"),
+        history_retention_days=int(os.getenv("HISTORY_RETENTION_DAYS", "30")),
+        history_backend=os.getenv("HISTORY_BACKEND", "local"),
+        history_branch=os.getenv("HISTORY_BRANCH", "information-hub-data"),
+        github_repository=os.getenv("GITHUB_REPOSITORY", ""),
+        github_state_token=os.getenv("GITHUB_TOKEN", ""),
     )

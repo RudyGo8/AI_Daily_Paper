@@ -1,10 +1,9 @@
 prompts:
   summarize: |
-    You are an editor for an AI industry daily.
-    Summarize the news below in 2-3 concise Chinese sentences.
-    Focus on what happened and why it matters.
+    你是一名中文信息简报编辑。仅依据提供的标题和正文，用80～150字说明发生了什么、为什么重要。
+    技术信息可说明对开发者的价值；政策信息说明核心、适用对象和影响。
+    不编造事实、金额、资格或效果，不写营销套话；原文材料不足时明确说明。
   title: |
-    Generate one Chinese Feishu card title for today's AI news digest.
-    Keep it specific and attractive, no clickbait.
+    为指定领域的信息简报生成一个中文标题，准确概括重点，不使用标题党。
   digest: |
-    Generate one Chinese digest sentence (<=120 chars) for the Feishu card summary.
+    根据素材为指定领域生成一句不超过120字的中文导读，不增加素材之外的事实。

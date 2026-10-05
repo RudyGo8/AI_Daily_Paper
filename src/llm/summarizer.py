@@ -20,12 +20,15 @@ class NewsSummarizer:
     def summarize_item(self, item: NewsItem) -> str:
         prompt = (
             f"{self.prompt_template}\n\n"
-            f"内容：{item.summary or item.content}\n"
+            f"标题：{item.title}\n来源：{item.source}\n"
+            f"内容：{(item.content or item.summary)[:4000]}\n"
             "输出："
         )
         result = self.llm_client.complete(prompt=prompt).strip()
         if not result or self.llm_client.is_fallback_response(result):
+            item.metadata["llm_fallback"] = True
             return self._fallback_summary(item)
+        item.metadata["llm_fallback"] = False
         return result
 
     def summarize_items(self, items: list[NewsItem]) -> list[NewsItem]:
@@ -35,10 +38,5 @@ class NewsSummarizer:
 
     @staticmethod
     def _fallback_summary(item: NewsItem) -> str:
-        category = item.category or "AI 行业"
-        keywords = "、".join(item.keywords[:4])
-        keyword_text = f"，关键词：{keywords}" if keywords else ""
-        return (
-            f"【模型摘要未生成】{item.source} 有一条{category}相关资讯"
-            f"{keyword_text}。请检查 DashScope 连接后重新生成，以获得完整中文摘要。"
-        )
+        material = " ".join((item.summary or item.content or item.title).split())
+        return f"【模型摘要未生成】{item.title}。{material[:100]}（请以原文为准）"

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from datetime import date
+from unittest.mock import Mock
+
+import pytest
 
 from src.models.schemas import DailyArticle, NewsItem
 from src.publishers.feishu_bot import FeishuBotPublisher
@@ -66,3 +69,48 @@ def test_feishu_publisher_dry_run_returns_card_preview() -> None:
     assert result["sent"] is False
     assert result["preview"]["msg_type"] == "interactive"
     assert "AI Daily Brief" in result["preview"]["card"]["elements"][0]["content"]
+
+
+def test_topic_card_keeps_rank_order_and_hides_scores():
+    article = _build_article()
+    article.topic, article.display_name, article.emoji = "agent", "Agent / Vibe Coding", "🧠"
+    first = article.categories["模型发布"][0]
+    first.hot_score = 999
+    article.ranked_items = [first]
+    payload = FeishuBotPublisher("", dry_run=True).build_card_payload(article)
+    assert "Top 1" in payload["card"]["header"]["title"]["content"]
+    text = payload["card"]["elements"][-1]["text"]["content"]
+    assert "1. OpenAI releases" in text
+    assert "hot_score" not in str(payload)
+    assert "999" not in str(payload)
+
+
+def test_feishu_business_error_is_not_reported_sent(monkeypatch):
+    response = Mock()
+    response.json.return_value = {"code": 19024, "msg": "failure"}
+    monkeypatch.setattr("src.publishers.feishu_bot.requests.post", lambda *a, **k: response)
+    monkeypatch.setattr("src.utils.retry.time.sleep", lambda _: None)
+    with pytest.raises(RuntimeError, match="rejected"):
+        FeishuBotPublisher("https://example.com/webhook").publish(_build_article())
+
+
+@pytest.mark.parametrize("ack", [{}, {"StatusCode": 1}, {"code": "bad"}, []])
+def test_invalid_feishu_acknowledgement_is_not_success(monkeypatch, ack):
+    response = Mock()
+    response.json.return_value = ack
+    monkeypatch.setattr("src.publishers.feishu_bot.requests.post", lambda *a, **k: response)
+    monkeypatch.setattr("src.utils.retry.time.sleep", lambda _: None)
+    with pytest.raises(RuntimeError):
+        FeishuBotPublisher("https://example.com/webhook").publish(_build_article())
+
+
+def test_feishu_network_error_does_not_expose_webhook(monkeypatch):
+    import requests
+    webhook = "https://example.com/hook/private-token"
+    def fail(*args, **kwargs):
+        raise requests.ConnectionError(webhook)
+    monkeypatch.setattr("src.publishers.feishu_bot.requests.post", fail)
+    monkeypatch.setattr("src.utils.retry.time.sleep", lambda _: None)
+    with pytest.raises(RuntimeError) as error:
+        FeishuBotPublisher(webhook).publish(_build_article())
+    assert "private-token" not in str(error.value)

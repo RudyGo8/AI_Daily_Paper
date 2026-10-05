@@ -1,0 +1,78 @@
+topics:
+  ai:
+    cron_utc: "0 1 * * *"
+    display_name: AI / 大模型
+    emoji: 🤖
+    top_k: 10
+    window_hours: 24
+    min_keyword_matches: 1
+    keywords: [AI, LLM, model, GPT, Claude, Gemini, DeepMind, Qwen, DeepSeek, GLM, Kimi, MiniMax, 大模型, 人工智能, 模型, 千问, 智谱, 多模态, 推理]
+    important_keywords: [release, launch, benchmark, 发布, 升级, 开源, 降价]
+  agent:
+    cron_utc: "0 2 * * *"
+    display_name: Agent / Vibe Coding
+    emoji: 🧠
+    top_k: 10
+    window_hours: 24
+    min_keyword_matches: 1
+    keywords: [agent, agents, agentic, MCP, RAG, Claude Code, Codex, Vibe Coding, Browser Use, Computer Use, LangGraph, LangChain, Dify, n8n, 智能体]
+    important_keywords: [release, launch, 开源, 发布, upgrade]
+    score_weights: {topic: 1.5}
+  github:
+    cron_utc: "0 3 * * *"
+    display_name: GitHub 热门项目
+    emoji: 🔥
+    top_k: 10
+    window_hours: 24
+    keywords: [AI, agent, agents, LLM, RAG, MCP, Python, developer, coding]
+    score_weights: {freshness: 0.5, popularity: 1.5}
+  python:
+    cron_utc: "0 4 * * *"
+    display_name: Python / 开源技术
+    emoji: 🐍
+    top_k: 10
+    window_hours: 24
+    min_keyword_matches: 1
+    keywords: [Python, FastAPI, Pydantic, uv, Ruff, pytest, Docker, OpenAPI, RAG, MCP, workflow, developer, 开源, 开发者]
+    important_keywords: [release, security, 发布, 漏洞, upgrade]
+  news:
+    cron_utc: "0 0 * * *"
+    display_name: 科技 / 社会重要新闻
+    emoji: 📰
+    top_k: 10
+    window_hours: 24
+    min_keyword_matches: 1
+    keywords: [科技, 政策, 就业, 经济, 人工智能, AI, technology, science, economy, employment, policy, security, 安全, 民生, 灾害, 地震, 教育, 医疗, earthquake, disaster, health, regulation]
+    exclude_keywords: [sponsored, advertorial, 限时优惠]
+    exclude_title_keywords: [娱乐, 明星, 八卦, 球赛, 体育, 足球, 篮球, 电影, 上映, 综艺, 游戏, celebrity, gossip, movie, trailer, 踏光而来, 重磅来袭, 惊艳登场, 火热开售]
+    important_keywords: [重大, 发布, 改革, 突破, security, regulation]
+    score_weights: {source: 1.5, cross_source: 1.5}
+  industry:
+    cron_utc: "30 7 * * *"
+    display_name: 行业 / 公司动态
+    emoji: 🏢
+    top_k: 10
+    window_hours: 24
+    min_keyword_matches: 1
+    exclude_title_keywords: [游戏, movie, trailer, 踏光而来, 限时优惠]
+    keywords: [智能硬件, 骑行, 消费电子, 企业AI, IPO, 融资, 并购, 财报, 战略合作, acquisition, funding, earnings, enterprise, hardware]
+    watch_companies: [OpenAI, Anthropic, Google, NVIDIA, Apple, Microsoft, Meta, Garmin, 小米, 华为, 大疆, 美团]
+    important_keywords: [IPO, 融资, 并购, 财报, acquisition, funding, earnings]
+  qingdao_policy:
+    cron_utc: "0 6 * * *"
+    display_name: 青岛政策 / 人才政策
+    emoji: 🏙
+    top_k: 10
+    window_hours: 24
+    min_keyword_matches: 1
+    keywords: [人才, 住房, 就业, 落户, 补贴, 硕士, 科技, 创业, 城阳]
+    important_keywords: [办法, 通知, 实施, 补贴, 认定]
+    score_weights: {source: 2, freshness: 1.5, popularity: 0.5, topic: 1.5, cross_source: 0.5}
+    summarize_prompt: 概括政策核心、适用对象和实际影响。只有正文明确写出的金额、条件和期限才可引用；材料不足时明确说明，不推测个人资格。
+  custom:
+    cron_utc: "0 9 * * *"
+    display_name: 自定义订阅
+    emoji: ⭐
+    top_k: 10
+    window_hours: 24
+    keywords: []

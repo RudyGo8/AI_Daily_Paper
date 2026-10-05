@@ -1,56 +1,186 @@
 sources:
-  # ==================== 全球大厂官方 ====================
   - name: OpenAI News
+    type: rss
+    topic: [ai, agent, industry]
     url: https://openai.com/news/rss.xml
-
+    source_weight: 5
   - name: Google AI Blog
+    type: rss
+    topic: [ai, agent, industry]
     url: https://blog.google/technology/ai/rss/
-
-  - name: Anthropic News
-    url: https://www.anthropic.com/news/rss
-
-  - name: Meta AI Blog
-    url: https://ai.meta.com/blog/rss/
-
-  - name: Microsoft AI Blog
-    url: https://blogs.microsoft.com/ai/feed/
-
-  - name: NVIDIA Blog (AI)
+    source_weight: 5
+  - name: NVIDIA Blog
+    type: rss
+    topic: [ai, agent, python, industry]
     url: https://developer.nvidia.com/blog/feed
-
-  # ==================== Agent / 智能体专区 ====================
-  - name: The Rundown AI (Agents & Tools)
+    source_weight: 5
+  - name: The Rundown AI
+    type: rss
+    topic: [ai, agent]
     url: https://www.therundown.ai/feed
-
-  - name: Ben's Bites (Daily AI + Agents)
+    source_weight: 3
+  - name: Ben's Bites
+    type: rss
+    topic: [ai, agent]
     url: https://www.bensbites.com/feed
-
-  - name: MarkTechPost (Research + Agents)
+    source_weight: 3
+  - name: MarkTechPost
+    type: rss
+    topic: [ai, agent, python]
     url: https://www.marktechpost.com/feed
-
-  # ==================== 企业落地 & 应用案例 ====================
-  - name: VentureBeat AI
-    url: https://venturebeat.com/category/ai/feed/
-
-  - name: AI Business (Enterprise Adoption)
-    url: https://aibusiness.com/feed
-
-  - name: The Information AI # 如有付费墙可移除
-    url: https://www.theinformation.com/topics/artificial-intelligence/rss
-
-  # ==================== 行业媒体 & 趋势 ====================
+    source_weight: 3
   - name: MIT Technology Review AI
+    type: rss
+    topic: [ai, news]
     url: https://www.technologyreview.com/topic/artificial-intelligence/feed
-
+    source_weight: 4
   - name: TechCrunch AI
+    type: rss
+    topic: [ai, agent, industry, news]
     url: https://techcrunch.com/category/artificial-intelligence/feed/
-
+    source_weight: 4
   - name: The Decoder
+    type: rss
+    topic: [ai, agent, industry]
     url: https://the-decoder.com/feed
-
-  # ==================== 国产模型 & 中文 AI 资讯 ====================
+    source_weight: 4
   - name: 量子位
+    type: rss
+    topic: [ai, agent, industry]
     url: https://www.qbitai.com/feed
-
-  - name: 雷峰网 (AI & 智能硬件)
+    source_weight: 3
+  - name: 雷峰网
+    type: rss
+    topic: [ai, agent, industry, news]
     url: https://www.leiphone.com/feed
+    source_weight: 3
+
+  - name: GitHub
+    type: github
+    topic: [github, agent, python]
+    source_weight: 4
+    per_page: 30
+    enrich_limit: 20
+    queries:
+      github: ["topic:ai-agent stars:>20", "topic:rag stars:>20", "topic:mcp stars:>20", "topic:llm stars:>20"]
+      agent: ["topic:ai-agent stars:>30", "topic:mcp stars:>30"]
+      python: ["language:Python topic:developer-tools stars:>20", "language:Python topic:llm stars:>20"]
+
+  - name: Python Insider
+    type: rss
+    topic: [python]
+    url: https://blog.python.org/feeds/posts/default?alt=rss
+    source_weight: 5
+  - name: Real Python
+    type: rss
+    topic: [python, custom]
+    url: https://realpython.com/atom.xml
+    source_weight: 4
+  - name: Astral Blog
+    type: rss
+    topic: [python, custom]
+    url: https://astral.sh/blog/rss.xml
+    source_weight: 5
+  - name: BBC Technology
+    type: rss
+    topic: [news, industry]
+    url: https://feeds.bbci.co.uk/news/technology/rss.xml
+    source_weight: 4
+  - name: BBC World
+    type: rss
+    topic: [news]
+    url: https://feeds.bbci.co.uk/news/world/rss.xml
+    source_weight: 4
+  - name: 中国新闻网
+    type: rss
+    topic: [news, industry]
+    url: https://www.chinanews.com.cn/rss/scroll-news.xml
+    source_weight: 4
+  - name: Solidot
+    type: rss
+    topic: [python, news]
+    url: https://www.solidot.org/index.rss
+    source_weight: 3
+  - name: IT之家
+    type: rss
+    topic: [news, industry]
+    url: https://www.ithome.com/rss/
+    source_weight: 3
+  - name: TechCrunch
+    type: rss
+    topic: [news, industry]
+    url: https://techcrunch.com/feed/
+    source_weight: 4
+  - name: Hacker News
+    type: rss
+    topic: [python, custom]
+    url: https://hnrss.org/frontpage
+    source_weight: 3
+  - name: Astral uv Repository
+    type: github
+    topic: [custom]
+    source_weight: 5
+    repositories: [astral-sh/uv]
+    enrich_limit: 1
+
+  - name: 青岛人社通知公告
+    type: webpage
+    topic: [qingdao_policy]
+    source_weight: 5
+    url: https://hrss.qingdao.gov.cn/zxzx_47/tzgg_47/
+    timezone: Asia/Shanghai
+    max_items: 30
+    max_detail_items: 10
+    date_regex: '(\d{4}-\d{2}-\d{2})'
+    selectors:
+      item: '.pc .lmlbc li'
+      link: 'p a'
+      title: 'p a'
+      date: 'em'
+    detail_selectors:
+      content: '.pc .trs_editor_view'
+      date: '.pc .wencon > p span'
+  - name: 青岛住建规范性文件
+    type: webpage
+    topic: [qingdao_policy]
+    source_weight: 5
+    url: https://sjw.qingdao.gov.cn/cxjsj11/cxjsj75/index.shtml
+    timezone: Asia/Shanghai
+    prefer_https: true
+    max_items: 30
+    max_detail_items: 10
+    date_regex: '(\d{4}-\d{2}-\d{2})'
+    selectors:
+      item: '.ul_list_list li'
+      link: 'a'
+      title: '.div_list_li_width_left'
+      date: '.div_list_li_width_right'
+    detail_selectors:
+      content: '.trs_editor_view'
+      date: '.time'
+  - name: Anthropic News
+    type: webpage
+    topic: [ai, agent, industry]
+    source_weight: 5
+    url: https://www.anthropic.com/news
+    timezone: America/Los_Angeles
+    date_format: '%b %d, %Y'
+    max_items: 30
+    max_detail_items: 10
+    selectors:
+      item: 'ul[class*="PublicationList"] li'
+      link: 'a[href^="/news/"]'
+      title: 'span[class*="__title"]'
+      date: 'time'
+    detail_selectors:
+      content: 'div[class*="Body-module"][class*="__body"]'
+      date: 'article time'
+
+  # Previous subscriptions retained for compatibility; live checks returned
+  # HTTP errors or no dated entries. Re-enable after checking the endpoint.
+  - {name: Anthropic News RSS, type: rss, topic: [ai, agent], url: "https://www.anthropic.com/news/rss", source_weight: 5, enabled: false}
+  - {name: Meta AI Blog RSS, type: rss, topic: [ai], url: "https://ai.meta.com/blog/rss/", source_weight: 5, enabled: false}
+  - {name: Microsoft AI Blog RSS, type: rss, topic: [ai], url: "https://blogs.microsoft.com/ai/feed/", source_weight: 5, enabled: false}
+  - {name: VentureBeat AI, type: rss, topic: [ai, industry], url: "https://venturebeat.com/category/ai/feed/", source_weight: 4, enabled: false}
+  - {name: AI Business, type: rss, topic: [ai, industry], url: "https://aibusiness.com/feed", source_weight: 3, enabled: false}
+  - {name: The Information AI, type: rss, topic: [ai], url: "https://www.theinformation.com/topics/artificial-intelligence/rss", source_weight: 4, enabled: false}

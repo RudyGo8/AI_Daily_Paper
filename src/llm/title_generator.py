@@ -1,11 +1,7 @@
-"""标题生成模块：调用 LLM 生成日报的微信公众号标题和摘要语。
-
-LLM 不可用时，降级为类别统计 + 日期组合的模板标题。
-"""
+"""Generate a topic title and digest with factual template fallbacks."""
 
 from __future__ import annotations
 
-from collections import Counter
 from datetime import date
 
 from src.llm.llm_client import LLMClient
@@ -19,13 +15,15 @@ class TitleGenerator:
         llm_client: LLMClient,
         title_prompt_template: str = "",
         digest_prompt_template: str = "",
+        display_name: str = "AI",
     ) -> None:
         self.llm_client = llm_client
+        self.display_name = display_name
         self.title_prompt_template = title_prompt_template or (
-            "请生成一个中文公众号标题，概括今日 AI 资讯重点。"
+            "请生成一个中文飞书简报标题，概括本时段资讯重点。"
         )
         self.digest_prompt_template = digest_prompt_template or (
-            "请生成一个不超过120字的中文摘要，用于公众号 digest。"
+            "请生成一个不超过120字的中文导读，用于飞书简报。"
         )
 
     def generate_title(self, target_date: date, items: list[NewsItem]) -> str:
@@ -38,7 +36,7 @@ class TitleGenerator:
         title = self.llm_client.complete(prompt=prompt, max_tokens=80).strip()
         title = title.replace("\n", " ")
         if not title or self.llm_client.is_fallback_response(title):
-            return self._fallback_title(target_date, items)
+            return f"{self.display_name}重点速览（{target_date.isoformat()}）"
         return title[:80]
 
     def generate_digest(self, items: list[NewsItem]) -> str:
@@ -47,22 +45,5 @@ class TitleGenerator:
         digest = self.llm_client.complete(prompt=prompt, max_tokens=140).strip()
         digest = digest.replace("\n", " ")
         if not digest or self.llm_client.is_fallback_response(digest):
-            return self._fallback_digest(items)
-        return digest[:120]
-
-    @staticmethod
-    def _fallback_title(target_date: date, items: list[NewsItem]) -> str:
-        categories = Counter(item.category or "行业事件" for item in items)
-        top_categories = "、".join(
-            category for category, _ in categories.most_common(2)
-        ) or "AI 行业"
-        return f"AI 资讯日报：{top_categories}重点速览（{target_date.isoformat()}）"
-
-    @staticmethod
-    def _fallback_digest(items: list[NewsItem]) -> str:
-        highlights = []
-        for item in items[:2]:
-            snippet = (item.ai_summary or item.summary or item.title).strip()
-            highlights.append(snippet[:36].rstrip("，。 ;") + "...")
-        digest = f"今日聚焦 {len(items)} 条 AI 动态：" + "；".join(highlights)
+            return f"本时段筛选 {len(items)} 条{self.display_name}动态，请结合原文查看。"
         return digest[:120]

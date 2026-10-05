@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date, datetime
+from typing import Any
 
 
 @dataclass
@@ -25,12 +26,26 @@ class NewsItem:
     merged_sources: list[str] = field(default_factory=list)
     merged_links: list[str] = field(default_factory=list)
     cluster_size: int = 1
+    topic: str = ""
+    source_type: str = "rss"
+    source_weight: float = 3.0
+    merged_titles: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    hot_score: float = 0.0
+    source_score: float = 0.0
+    freshness_score: float = 0.0
+    popularity_score: float = 0.0
+    cross_source_score: float = 0.0
+    topic_score: float = 0.0
+    score_reasons: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if not self.merged_sources and self.source:
             self.merged_sources = [self.source]
         if not self.merged_links and self.link:
             self.merged_links = [self.link]
+        if not self.merged_titles and self.title:
+            self.merged_titles = [self.title]
 
 
 @dataclass
@@ -41,3 +56,11 @@ class DailyArticle:
     digest: str
     categories: dict[str, list[NewsItem]]
     total_items: int
+    topic: str = ""
+    display_name: str = ""
+    emoji: str = ""
+    generated_at: datetime | None = None
+    window_hours: float = 24
+    ranked_items: list[NewsItem] = field(default_factory=list)
+    statistics: dict[str, int] = field(default_factory=dict)
+    date_mode: bool = False

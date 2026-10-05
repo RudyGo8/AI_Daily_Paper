@@ -55,7 +55,7 @@ class LLMClient:
             content = self._extract_content(response)
             return content or self._fallback(prompt)
         except Exception as exc:
-            LOGGER.warning("LLM call failed, fallback enabled: %s", exc)
+            LOGGER.warning("LLM call failed, fallback enabled; error_type=%s", type(exc).__name__)
             return self._fallback(prompt)
 
     def _call_openai_compatible(
@@ -110,17 +110,22 @@ class LLMClient:
 
     @staticmethod
     def _extract_content(response: dict) -> str:
-        message = response.get("choices", [{}])[0].get("message", {})
+        if not isinstance(response, dict):
+            return ""
+        choices = response.get("choices")
+        if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
+            return ""
+        message = choices[0].get("message", {})
+        if not isinstance(message, dict):
+            return ""
         content = message.get("content", "")
         if isinstance(content, list):
             text_fragments = []
             for part in content:
-                if isinstance(part, dict):
-                    text_fragments.append(str(part.get("text", "")))
-                else:
-                    text_fragments.append(str(part))
+                if isinstance(part, dict) and isinstance(part.get("text"), str):
+                    text_fragments.append(part["text"])
             return "".join(text_fragments).strip()
-        return str(content).strip()
+        return content.strip() if isinstance(content, str) else ""
 
     @classmethod
     def _fallback(cls, prompt: str) -> str:

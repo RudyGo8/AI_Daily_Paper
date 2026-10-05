@@ -40,6 +40,18 @@ class FeishuBotPublisher:
 
     def build_card_payload(self, article: DailyArticle) -> dict:
         header_title = f"{self.message_title} | {article.target_date.isoformat()}"
+        if article.topic:
+            stamp = article.generated_at.strftime("%Y-%m-%d %H:%M") if article.generated_at else article.target_date.isoformat()
+            header_title = f"{article.emoji} {article.display_name} Top {article.total_items} | {stamp}"
+        statistics = article.statistics
+        count_note = f"共 {article.total_items} 条重点动态"
+        if article.topic:
+            period = f"指定日期 {article.target_date.isoformat()}" if article.date_mode else f"过去 {article.window_hours:g} 小时"
+            count_note = (f"{period}共抓取 {statistics.get('raw', 0)} 条，"
+                          f"时间筛选后 {statistics.get('within_window', 0)} 条，"
+                          f"领域去重后 {statistics.get('after_dedup', 0)} 条，最终筛选 {article.total_items} 条")
+            if statistics.get("history_filtered"):
+                count_note += f"，过滤已推送 {statistics['history_filtered']} 条"
         elements: list[dict] = [
             {
                 "tag": "markdown",
@@ -53,13 +65,13 @@ class FeishuBotPublisher:
                 "elements": [
                     {
                         "tag": "plain_text",
-                        "content": f"共 {article.total_items} 条重点动态",
+                        "content": count_note,
                     }
                 ],
             },
         ]
 
-        sections = self._build_category_sections(article)
+        sections = self._build_ranked_sections(article) if article.topic else self._build_category_sections(article)
         if sections:
             elements.append({"tag": "hr"})
             elements.extend(sections)
@@ -91,6 +103,16 @@ class FeishuBotPublisher:
                 "elements": elements,
             },
         }
+
+    def _build_ranked_sections(self, article: DailyArticle) -> list[dict]:
+        sections = []
+        for index, item in enumerate(article.ranked_items, 1):
+            title = self._shorten(item.title, 90)
+            summary = self._shorten(item.ai_summary or item.summary, 150)
+            text = (f"**{index}. {self._escape(title)}**\n{self._escape(summary)}\n"
+                    f"来源：{self._escape(self._source_note(item))}\n[阅读全文 →]({item.link})")
+            sections.append({"tag": "div", "text": {"tag": "lark_md", "content": text}})
+        return sections
 
     def _build_category_sections(
         self,
@@ -160,10 +182,12 @@ class FeishuBotPublisher:
 
     @retry(max_attempts=3, delay_seconds=1.0)
     def _post_json(self, payload: dict) -> dict:
-        response = requests.post(
-            self.webhook_url,
-            json=payload,
-            timeout=self.request_timeout,
-        )
-        response.raise_for_status()
-        return response.json()
+        try:
+            response = requests.post(self.webhook_url, json=payload, timeout=self.request_timeout)
+            response.raise_for_status()
+            result = response.json()
+        except (requests.RequestException, ValueError):
+            raise RuntimeError("Feishu request failed") from None
+        if not isinstance(result, dict) or result.get("code", result.get("StatusCode")) != 0:
+            raise RuntimeError("Feishu rejected the card payload")
+        return result

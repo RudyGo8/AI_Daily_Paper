@@ -1,0 +1,98 @@
+name: Multi-topic Information Hub
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+    - cron: "0 1 * * *"
+    - cron: "0 2 * * *"
+    - cron: "0 3 * * *"
+    - cron: "0 4 * * *"
+    - cron: "0 6 * * *"
+    - cron: "30 7 * * *"
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: Topic key from configs/topics.yaml
+        required: true
+        default: ai
+        type: string
+      target_date:
+        description: Optional natural day for debugging (YYYY-MM-DD)
+        type: string
+      dry_run:
+        description: Preview only; do not send or update state
+        default: true
+        type: boolean
+      top_k:
+        description: Optional number of ranked items (default from YAML)
+        type: string
+      window_hours:
+        description: Optional rolling window hours (default from YAML)
+        type: string
+
+# Per-topic state is stored on information-hub-data, never the code branch.
+permissions:
+  contents: write
+
+concurrency:
+  group: information-hub-state
+  cancel-in-progress: false
+
+jobs:
+  broadcast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: "1"
+      LOAD_DOTENV: "false"
+      LOG_LEVEL: INFO
+      TIMEZONE: Asia/Shanghai
+      GITHUB_TOKEN: ${{ github.token }}
+      GH_API_TOKEN: ${{ secrets.GH_API_TOKEN }}
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      HISTORY_BACKEND: github
+      HISTORY_ENABLED: "true"
+      HISTORY_BRANCH: information-hub-data
+      LLM_PROVIDER: ${{ secrets.LLM_PROVIDER }}
+      LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_MODEL: ${{ secrets.LLM_MODEL }}
+      FEISHU_ENABLED: "true"
+      FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+      FEISHU_MESSAGE_TITLE: ${{ secrets.FEISHU_MESSAGE_TITLE }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v4
+      - name: Install dependencies
+        run: uv sync --extra dev --frozen
+      - name: Run offline tests
+        env:
+          LLM_API_KEY: ""
+          FEISHU_WEBHOOK_URL: ""
+          HISTORY_BACKEND: local
+        run: uv run python -B -m pytest -q -p no:cacheprovider
+      - name: Select topic and run pipeline
+        env:
+          TRIGGER_CRON: ${{ github.event.schedule }}
+          INPUT_TOPIC: ${{ github.event.inputs.topic }}
+          INPUT_DATE: ${{ github.event.inputs.target_date }}
+          INPUT_TOP_K: ${{ github.event.inputs.top_k }}
+          INPUT_WINDOW: ${{ github.event.inputs.window_hours }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+        shell: bash
+        run: |
+          if [[ -n "$TRIGGER_CRON" ]]; then
+            topic=$(uv run python -m src.schedule --cron "$TRIGGER_CRON")
+          else
+            topic="$INPUT_TOPIC"
+          fi
+          args=(--topic "$topic")
+          [[ -z "$INPUT_DATE" ]] || args+=(--date "$INPUT_DATE")
+          [[ -z "$INPUT_TOP_K" ]] || args+=(--top-k "$INPUT_TOP_K")
+          [[ -z "$INPUT_WINDOW" ]] || args+=(--window-hours "$INPUT_WINDOW")
+          [[ "$INPUT_DRY_RUN" != "true" ]] || args+=(--dry-run)
+          uv run python -m src.main "${args[@]}"

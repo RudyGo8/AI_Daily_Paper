@@ -50,3 +50,12 @@ def test_deduplicator_clusters_same_event_across_sources() -> None:
         "The Decoder",
     }
     assert len(deduplicated[0].merged_links) == 3
+
+
+def test_same_link_merges_sources_instead_of_discarding():
+    items = [_news_item(source, "MCP release", "https://example.com/release", source,
+                        "2026-10-04T02:00:00Z") for source in ["Official", "Media"]]
+    result = NewsDeduplicator().deduplicate(items)
+    assert len(result) == 1
+    assert set(result[0].merged_sources) == {"Official", "Media"}
+    assert result[0].cluster_size == 2

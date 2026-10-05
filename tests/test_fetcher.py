@@ -61,3 +61,21 @@ def test_source_manager_fetch_and_filter() -> None:
     filtered = filter_items_by_date(items, date(2026, 4, 23))
     assert len(filtered) == 2
 
+
+def test_rss_invalid_dates_are_not_invented_and_atom_content_is_preserved():
+    payload = '''<feed xmlns="http://www.w3.org/2005/Atom">
+    <entry><title>Valid</title><link href="https://example.com/a"/>
+      <updated>2026-10-04T12:00:00Z</updated><content type="html">Detailed policy text</content></entry>
+    <entry><title>Undated</title><link href="https://example.com/b"/></entry>
+    <entry><title>Invalid</title><link href="https://example.com/c"/><updated>nonsense</updated></entry>
+    </feed>'''
+    items = RSSFetcher()._parse_with_feedparser(payload, "Test")
+    assert len(items) == 1
+    assert items[0].content == "Detailed policy text"
+
+
+def test_html_response_is_a_source_failure_not_an_empty_feed():
+    import pytest
+    with pytest.raises(ValueError, match="RSS/Atom"):
+        RSSFetcher()._parse_with_feedparser("<html><body>Service unavailable</body></html>", "Test")
+

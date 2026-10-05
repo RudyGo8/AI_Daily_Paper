@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-AI Daily Paper：从 RSS 源抓取每日 AI 资讯，经清洗、去重、分类后调用 LLM（OpenAI 兼容协议，默认 DashScope 千问）生成中文摘要、标题与 digest，最终以飞书群机器人 interactive card 推送。GitHub Actions 每日定时运行（`.github/workflows/daily-report.yml`，UTC 22:01 / 北京时间 06:01）。
+AI Daily Paper V2：按 Topic 从 RSS、GitHub、明确配置的静态网页采集资讯，过去 24 小时筛选、清洗、领域过滤、合并、历史去重、评分排序后，仅对 Top K 调用 LLM（OpenAI 兼容协议，默认 DashScope 千问），生成中文摘要、标题和导读，以同一个飞书群机器人 interactive card 推送。GitHub Actions 多时段运行（`.github/workflows/information-hub.yml`，北京时间 08:00～17:00）。
 
 ## 技术栈
 
@@ -12,9 +12,10 @@ AI Daily Paper：从 RSS 源抓取每日 AI 资讯，经清洗、去重、分类
 ## 常用命令
 
 ```powershell
-uv sync                                              # 安装依赖
-uv run python -m src.main --dry-run --max-items 6    # 本地预览（不推送飞书）
-uv run python -m src.main --date 2026-08-17          # 指定日期正式运行
+uv sync --extra dev                                   # 安装依赖与 pytest
+uv run python -m src.main --topic ai --dry-run --top-k 10 # 本地预览（不推送，不写历史）
+uv run python -m src.main --topic github --dry-run      # GitHub 领域预览
+uv run python -m src.main --topic ai --date 2026-08-17 --dry-run # 指定自然日调试
 uv run python -B -m pytest -q -p no:cacheprovider    # 测试
 ```
 
@@ -22,14 +23,18 @@ uv run python -B -m pytest -q -p no:cacheprovider    # 测试
 
 ```text
 configs/
-  sources.yaml            # RSS 源列表（name + url）
+  sources.yaml            # RSS / GitHub / Webpage 源与多 Topic 绑定，兼容 name + url
+  topics.yaml             # 领域、窗口、Top K、评分权重、关键词、公司名单、Cron
   categories.yaml         # 分类关键词
   prompt_templates.yaml   # LLM 提示词模板（summarize / title / digest）
 src/
-  main.py                 # Pipeline 入口：抓取→筛选→清洗→去重→分类→关键词→LLM摘要→飞书推送
+  main.py                 # 单 Topic Pipeline：筛选→合并→历史过滤→评分→排序→Top K→LLM→飞书
+  topics.py               # Topic 校验与关键词匹配
+  schedule.py             # 根据触发 Cron 解析 Topic，不依赖实际启动时间
   config.py               # 配置加载（.env + 环境变量，Settings 为全局唯一入口）
-  fetchers/               # RSS 抓取（rss_fetcher）与多源管理（source_manager）
-  processors/             # 清洗 cleaner / 去重 deduplicator / 分类 classifier / 关键词 keyword_extractor
+  fetchers/               # rss_fetcher / github_fetcher / webpage_fetcher / source_manager
+  processors/             # cleaner / deduplicator / classifier / keyword_extractor / hot_scorer / ranker
+  storage/                # 原子本地 JSON 历史 / GitHub 专用 data branch 状态
   llm/                    # LLM 客户端 llm_client / 摘要 summarizer / 标题生成 title_generator
   publishers/             # 飞书机器人推送 feishu_bot
   models/schemas.py       # NewsItem / DailyArticle 数据结构
@@ -44,3 +49,7 @@ tests/                    # pytest（网络层全部 mock，可离线跑）
 - **飞书推送支持 dry-run**：`--dry-run` 输出卡片 payload 预览，不实际发送
 - **配置与代码分离**：源、分类、提示词全部在 `configs/*.yaml`；密钥走环境变量 / GitHub secrets，代码中无业务硬编码
 - **去重是合并不是丢弃**：重复条目合并来源/链接/标题到 `merged_*` 字段，保留信息量更大的一方作为主体
+- **先排名再 LLM**：不得在评分排序前截取 Top K；卡片保留全局排名，不按分类重新排序
+- **时间不能编造**：缺失/非法发布日期跳过；`--date` 用指定时区自然日，其余默认滚动 24h
+- **历史只在成功推送后写入**：dry-run 仅读历史；飞书确认成功业务码后保存；CI 使用 `information-hub-data` 分支，每 Topic 一个 JSON，禁止写默认分支
+- **离线测试不加载密钥**：测试 fixture 设置 `LOAD_DOTENV=false`，网络由 mock 隔离

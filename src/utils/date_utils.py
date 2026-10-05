@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timezone
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+from email.utils import parsedate_to_datetime
 
 
 def parse_target_date(date_text: str | None) -> date:
@@ -60,3 +61,23 @@ def to_local_date(dt: datetime, timezone_name: str) -> date:
 
 def is_same_day(dt: datetime, target: date, timezone_name: str = "UTC") -> bool:
     return to_local_date(dt, timezone_name) == target
+
+
+def strict_datetime(value: object, timezone_name: str = "UTC") -> datetime | None:
+    """Parse a real publication timestamp; never invent one for a bad date."""
+    if not value:
+        return None
+    if isinstance(value, datetime):
+        parsed = value
+    else:
+        text = str(value).strip()
+        try:
+            parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        except ValueError:
+            try:
+                parsed = parsedate_to_datetime(text)
+            except (ValueError, TypeError, OverflowError):
+                return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=get_timezone(timezone_name))
+    return parsed.astimezone(timezone.utc)

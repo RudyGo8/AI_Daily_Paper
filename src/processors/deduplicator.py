@@ -111,23 +111,18 @@ class NewsDeduplicator:
             reverse=True,
         )
         unique: list[NewsItem] = []
-        seen_links: set[str] = set()
 
         for item in ordered_items:
             normalized_link = _normalize_link(item.link)
-            if normalized_link and normalized_link in seen_links:
-                continue
-
             merged = False
             for index, saved in enumerate(unique):
-                if self._is_duplicate(item, saved):
+                same_link = normalized_link and normalized_link in {_normalize_link(link) for link in saved.merged_links}
+                if same_link or (item.source_type != "github" and saved.source_type != "github" and self._is_duplicate(item, saved)):
                     unique[index] = self._merge(saved, item)
                     merged = True
                     break
 
             if not merged:
-                if normalized_link:
-                    seen_links.add(normalized_link)
                 unique.append(item)
 
         return unique
@@ -189,7 +184,15 @@ class NewsDeduplicator:
         primary.merged_links = list(
             dict.fromkeys(primary.merged_links + secondary.merged_links)
         )
-        primary.cluster_size = len(primary.merged_links) or len(primary.merged_sources)
+        primary.merged_titles = list(dict.fromkeys(primary.merged_titles + secondary.merged_titles))
+        primary.cluster_size = max(1, len(primary.merged_sources))
+        primary.source_weight = max(primary.source_weight, secondary.source_weight)
+        weights = {**secondary.metadata.get("source_weights", {}), **primary.metadata.get("source_weights", {})}
+        primary.metadata = {**secondary.metadata, **primary.metadata}
+        primary.metadata["source_weights"] = weights
+        if secondary.source_type == "github":
+            primary.source_type = "github"
+        primary.published_at = max(primary.published_at, secondary.published_at)
 
         if not primary.content and secondary.content:
             primary.content = secondary.content
