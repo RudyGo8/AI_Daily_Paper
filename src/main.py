@@ -167,7 +167,7 @@ def run_pipeline(target_date: date | None = None, dry_run: bool = True,
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Multi-topic Feishu information hub")
-    parser.add_argument("--topic", default="ai", help="Topic key from topics.yaml (default: ai)")
+    parser.add_argument("--topic", default="ai", help="Topic key from topics.yaml, or all for every topic (default: ai)")
     parser.add_argument("--top-k", type=int, default=None, help="Number of ranked items")
     parser.add_argument("--window-hours", type=float, default=None, help="Rolling window length")
     parser.add_argument("--date", default=None, help="Debug a natural day: YYYY-MM-DD")
@@ -185,12 +185,42 @@ def main() -> None:
     args = parser.parse_args()
     try:
         target_date = date.fromisoformat(args.date) if args.date else None
-        report = run_pipeline(target_date, args.dry_run, args.max_items, topic=args.topic,
-                              top_k=args.top_k, window_hours=args.window_hours)
+        limit = args.top_k if args.top_k is not None else args.max_items
+        if limit is not None and limit <= 0:
+            raise ValueError("top_k must be positive")
+        if args.window_hours is not None and not 0 < args.window_hours < float("inf"):
+            raise ValueError("window_hours must be positive and finite")
+        if args.topic == "all":
+            settings = load_settings()
+            config = load_yaml(settings.topics_file)
+            topics = list(config.get("topics", {}))
+            if not topics:
+                raise ValueError("No topics configured")
+            # Validate every topic before starting delivery.
+            for topic in topics:
+                load_topic(config, topic)
+            reports = []
+            logger = setup_logger(settings.log_level)
+            for topic in topics:
+                try:
+                    result = run_pipeline(target_date, args.dry_run, args.max_items, topic=topic,
+                                          top_k=args.top_k, window_hours=args.window_hours)
+                except Exception as exc:
+                    logger.error("topic=%s pipeline failed error_type=%s; continuing remaining topics",
+                                 topic, type(exc).__name__)
+                    result = {"topic": topic, "error_type": type(exc).__name__,
+                              "feishu_result": {"enabled": settings.feishu_enabled, "sent": False}}
+                reports.append(result)
+            report = {"topic": "all", "reports": reports}
+        else:
+            report = run_pipeline(target_date, args.dry_run, args.max_items, topic=args.topic,
+                                  top_k=args.top_k, window_hours=args.window_hours)
+            reports = [report]
     except ValueError as exc:
         parser.error(str(exc))
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    if report["feishu_result"]["enabled"] and not args.dry_run and not report["feishu_result"]["sent"]:
+    if any(result.get("error_type") or (result["feishu_result"]["enabled"] and
+           not args.dry_run and not result["feishu_result"]["sent"]) for result in reports):
         raise SystemExit(1)
 
 

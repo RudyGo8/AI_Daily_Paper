@@ -71,7 +71,7 @@ class FeishuBotPublisher:
             },
         ]
 
-        sections = self._build_ranked_sections(article) if article.topic else self._build_category_sections(article)
+        sections = self._build_category_sections(article)
         if sections:
             elements.append({"tag": "hr"})
             elements.extend(sections)
@@ -104,31 +104,22 @@ class FeishuBotPublisher:
             },
         }
 
-    def _build_ranked_sections(self, article: DailyArticle) -> list[dict]:
-        sections = []
-        for index, item in enumerate(article.ranked_items, 1):
-            title = self._shorten(item.title, 90)
-            summary = self._shorten(item.ai_summary or item.summary, 150)
-            text = (f"**{index}. {self._escape(title)}**\n{self._escape(summary)}\n"
-                    f"来源：{self._escape(self._source_note(item))}\n[阅读全文 →]({item.link})")
-            sections.append({"tag": "div", "text": {"tag": "lark_md", "content": text}})
-        return sections
-
-    def _build_category_sections(
-        self,
-        article: DailyArticle,
-        max_categories: int = 99,
-        max_items_per_category: int = 99,
-    ) -> list[dict]:
+    def _build_category_sections(self, article: DailyArticle) -> list[dict]:
         sections: list[dict] = []
+        categories = article.categories
+        if article.topic:
+            # Group only the scored Top K, keeping first appearance and rank within each group.
+            categories = {}
+            for item in article.ranked_items:
+                categories.setdefault(item.category or "其他动态", []).append(item)
 
-        for category, items in list(article.categories.items())[:max_categories]:
+        for category, items in categories.items():
             if not items:
                 continue
 
             lines = [f"**{self._escape(category)}**"]
-            for item in items[:max_items_per_category]:
-                title = self._shorten(self._display_title(item), 72)
+            for item in items:
+                title = self._shorten(item.title, 72)
                 title_link = f"[{self._escape(title)}]({item.link})"
                 summary = self._shorten(item.ai_summary or item.summary, 150)
                 source_note = self._source_note(item)
@@ -147,12 +138,6 @@ class FeishuBotPublisher:
             )
 
         return sections
-
-    @staticmethod
-    def _display_title(item: NewsItem) -> str:
-        if (item.ai_summary or "").startswith("【模型摘要未生成】"):
-            return f"{item.category or 'AI 资讯'}：来自 {item.source} 的原文链接"
-        return item.title
 
     @staticmethod
     def _source_note(item: NewsItem) -> str:

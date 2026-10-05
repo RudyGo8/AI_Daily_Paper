@@ -29,6 +29,7 @@ Python 3.11+，使用 uv：
 uv sync --extra dev
 Copy-Item .env.example .env
 uv run python -m src.main --topic ai --top-k 10 --dry-run
+uv run python -m src.main --topic all --dry-run # 一次预览全部主题
 uv run python -m src.main --topic agent --window-hours 24 --dry-run
 uv run python -m src.main --topic github --dry-run
 ```
@@ -50,7 +51,7 @@ uv run python -m src.main --topic news --dry-run
 uv run python -m src.main --topic ai
 ```
 
-保留 `--date YYYY-MM-DD` 作为调试模式，筛选指定时区的自然日；它优先于滚动窗口参数。`--max-items` 是 `--top-k` 的旧参数别名，两者同时指定时 `--top-k` 优先。默认 Topic 为 `ai`。Top K 与窗口必须为正数，未知 Topic 会给出明确错误。
+保留 `--date YYYY-MM-DD` 作为调试模式，筛选指定时区的自然日；它优先于滚动窗口参数。`--max-items` 是 `--top-k` 的旧参数别名，两者同时指定时 `--top-k` 优先。本地 CLI 默认 Topic 为 `ai`，`--topic all` 依次执行全部配置主题，输出包含各主题结果的 `reports` 数组；Top K 和窗口参数分别应用于每个主题。一个主题执行或推送失败时仍尝试其他主题，最后以非零退出码报告部分失败。Top K 与窗口必须为正数，未知 Topic 会给出明确错误。
 
 历史日期无法从 GitHub 当前仓库状态还原当日完整榜单；要回放 RSS/网页并忽略已推送记录，可设置 `HISTORY_ENABLED=false`。
 
@@ -73,7 +74,7 @@ LLM 只处理排名后的条目。单源、单条目或 LLM 失败会隔离或�
 
 ## 配置领域与信息源
 
-`configs/topics.yaml` 配置显示名、emoji、`top_k`、`window_hours`、领域关键词、重大事件关键词、正文排除词、标题排除词、公司观察名单和评分权重。`agent` 等领域要求关键词匹配，避免泛 AI 内容占据榜单。`industry.watch_companies` 可修改关注公司。新增 Topic 时，常规手动运行只需配置；新增定时任务还需同步 Workflow Cron。
+`configs/topics.yaml` 配置显示名、emoji、`top_k`、`window_hours`、领域关键词、重大事件关键词、正文排除词、标题排除词、公司观察名单和评分权重。`agent` 等领域要求关键词匹配，避免泛 AI 内容占据榜单。`industry.watch_companies` 可修改关注公司。新增 Topic 时，`all` 自动包含它；若希望单独从 Actions 下拉菜单运行，需要同步 Workflow 的 Topic 选项；新增定时任务还需同步 Workflow Cron。
 
 `configs/sources.yaml` 每个源可绑定多个 Topic：
 
@@ -137,7 +138,7 @@ hot_score = source_score + freshness_score + popularity_score
 
 排序为 `hot_score DESC → published_at DESC → cluster_size DESC`。相似资讯合并来源、链接、标题并保留较丰富内容，最高来源权重和 GitHub 指标不会因合并丢失。不同 GitHub 仓库不做模糊合并。
 
-飞书按排名展示编号、摘要、合并来源及原文链接；卡片显示领域、实际条数、生成时间和数量统计。分数及原因只进入日志，不显示在卡片中。
+飞书正文按分类展示：加粗分类标题 → 可直接点击的原文标题 → 中文摘要与合并来源。先按热度选出 Top K，再对入选条目分组；分类按首次出现排序，组内保留热度顺序。卡片显示领域、实际条数、生成时间和数量统计。分数及原因只进入日志，不显示在卡片中。
 
 ## 跨天历史
 
@@ -153,7 +154,11 @@ CI 使用 **`information-hub-data` 专用分支** 保存每个 Topic 的 JSON，
 
 ## GitHub Actions 部署
 
-唯一正式 Workflow：`.github/workflows/information-hub.yml`。旧 `daily-report.yml` 已替换，避免重复推送。手动触发默认 `dry_run=true`，支持输入 Topic、日期、Top K 和窗口。
+唯一正式 Workflow：`.github/workflows/information-hub.yml`。旧 `daily-report.yml` 已替换，避免重复推送。手动触发默认 `topic=all`、`dry_run=true`，支持选择 Topic、日期、Top K 和窗口。
+
+**手动运行选择 `all` 时，一次生成全部八个主题的独立卡片。** 保持预览勾选，会在日志中显示八张卡片；取消勾选后依次发送到同一个飞书群。也可选择 `ai`、`agent` 等只运行单个主题。`ai` 是 AI / 大模型，`agent` 是 Agent / Vibe Coding，内容可能重叠，但各自独立筛选和记录历史。日常自动推送仍按本文开头的八个时间分别执行单个主题。
+
+手动运行的记录标题会显示 Topic 及“预览 / 正式推送”。预览仅在日志中显示卡片，不发飞书消息；取消 `dry_run` 后才正式推送。过去 24 小时无符合条件的未推送资讯时，卡片会说明暂无新资讯，不填入旧内容。
 
 将代码和配置提交到仓库默认分支后，配置仓库 Secrets：
 

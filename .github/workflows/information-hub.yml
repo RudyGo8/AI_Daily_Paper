@@ -1,4 +1,5 @@
 name: Multi-topic Information Hub
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('{0} · {1}', inputs.topic, inputs.dry_run && '预览' || '正式推送') || format('定时播报 · {0}', github.event.schedule) }}
 
 on:
   schedule:
@@ -13,15 +14,25 @@ on:
   workflow_dispatch:
     inputs:
       topic:
-        description: Topic key from configs/topics.yaml
+        description: 手动默认 all 播报全部主题，也可选择单个主题
         required: true
-        default: ai
-        type: string
+        default: all
+        type: choice
+        options:
+          - all
+          - ai
+          - agent
+          - github
+          - python
+          - news
+          - qingdao_policy
+          - industry
+          - custom
       target_date:
         description: Optional natural day for debugging (YYYY-MM-DD)
         type: string
       dry_run:
-        description: Preview only; do not send or update state
+        description: 仅预览（不发送飞书、不更新历史）；取消勾选后正式推送
         default: true
         type: boolean
       top_k:

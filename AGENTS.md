@@ -14,6 +14,7 @@ AI Daily Paper V2：按 Topic 从 RSS、GitHub、明确配置的静态网页采�
 ```powershell
 uv sync --extra dev                                   # 安装依赖与 pytest
 uv run python -m src.main --topic ai --dry-run --top-k 10 # 本地预览（不推送，不写历史）
+uv run python -m src.main --topic all --dry-run         # 一次预览全部主题
 uv run python -m src.main --topic github --dry-run      # GitHub 领域预览
 uv run python -m src.main --topic ai --date 2026-08-17 --dry-run # 指定自然日调试
 uv run python -B -m pytest -q -p no:cacheprovider    # 测试
@@ -49,7 +50,8 @@ tests/                    # pytest（网络层全部 mock，可离线跑）
 - **飞书推送支持 dry-run**：`--dry-run` 输出卡片 payload 预览，不实际发送
 - **配置与代码分离**：源、分类、提示词全部在 `configs/*.yaml`；密钥走环境变量 / GitHub secrets，代码中无业务硬编码
 - **去重是合并不是丢弃**：重复条目合并来源/链接/标题到 `merged_*` 字段，保留信息量更大的一方作为主体
-- **先排名再 LLM**：不得在评分排序前截取 Top K；卡片保留全局排名，不按分类重新排序
+- **先排名再 LLM**：不得在评分排序前截取 Top K；卡片仅对入选条目按分类展示，分类按首次出现排序，组内保留热度顺序
+- **手动支持全部主题**：Actions 默认 `all`，CLI `--topic all` 依次生成独立卡片；定时任务仍按 Cron 运行单 Topic。某个 Topic 失败后继续其余主题，最终以非零退出码报告部分失败
 - **时间不能编造**：缺失/非法发布日期跳过；`--date` 用指定时区自然日，其余默认滚动 24h
 - **历史只在成功推送后写入**：dry-run 仅读历史；飞书确认成功业务码后保存；CI 使用 `information-hub-data` 分支，每 Topic 一个 JSON，禁止写默认分支
 - **离线测试不加载密钥**：测试 fixture 设置 `LOAD_DOTENV=false`，网络由 mock 隔离
