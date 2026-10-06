@@ -42,16 +42,18 @@ class FeishuBotPublisher:
         header_title = f"{self.message_title} | {article.target_date.isoformat()}"
         if article.topic:
             stamp = article.generated_at.strftime("%Y-%m-%d %H:%M") if article.generated_at else article.target_date.isoformat()
-            header_title = f"{article.emoji} {article.display_name} Top {article.total_items} | {stamp}"
+            header_title = f"{article.emoji} {article.display_name} Top {article.total_items} | 截至 {stamp}"
         statistics = article.statistics
         count_note = f"共 {article.total_items} 条重点动态"
         if article.topic:
             period = f"指定日期 {article.target_date.isoformat()}" if article.date_mode else f"过去 {article.window_hours:g} 小时"
             count_note = (f"{period}共抓取 {statistics.get('raw', 0)} 条，"
                           f"时间筛选后 {statistics.get('within_window', 0)} 条，"
-                          f"领域去重后 {statistics.get('after_dedup', 0)} 条，最终筛选 {article.total_items} 条")
+                          f"领域匹配后 {statistics.get('topic_matched', 0)} 条，"
+                          f"合并去重后 {statistics.get('after_dedup', 0)} 条")
             if statistics.get("history_filtered"):
                 count_note += f"，过滤已推送 {statistics['history_filtered']} 条"
+            count_note += f"，最终推荐 {article.total_items} 条"
         elements: list[dict] = [
             {
                 "tag": "markdown",

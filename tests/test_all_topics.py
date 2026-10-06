@@ -1,9 +1,30 @@
 import json
 import sys
+from datetime import datetime, timezone
 
 import pytest
 
 import src.main as pipeline
+
+
+def test_all_topics_uses_one_batch_timestamp(monkeypatch, capsys):
+    """Cards from one manual all-topic run share one window end and header time."""
+    monkeypatch.setattr(sys, "argv", ["main", "--topic", "all", "--dry-run"])
+    captured_times = []
+
+    def run(*args, **kwargs):
+        captured_times.append(kwargs.get("now"))
+        return {
+            "topic": kwargs["topic"],
+            "feishu_result": {"enabled": False, "sent": False},
+        }
+
+    monkeypatch.setattr(pipeline, "run_pipeline", run)
+    pipeline.main()
+    json.loads(capsys.readouterr().out)
+    assert len(captured_times) == 8
+    assert len(set(captured_times)) == 1
+    assert captured_times[0].tzinfo is timezone.utc
 
 
 def test_all_topics_attempts_remaining_cards_after_failed_delivery(monkeypatch, capsys, tmp_path):

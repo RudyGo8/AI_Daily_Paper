@@ -201,10 +201,12 @@ def main() -> None:
                 load_topic(config, topic)
             reports = []
             logger = setup_logger(settings.log_level)
+            # A single manual batch must use one cutoff time for every card.
+            batch_now = datetime.now(timezone.utc)
             for topic in topics:
                 try:
                     result = run_pipeline(target_date, args.dry_run, args.max_items, topic=topic,
-                                          top_k=args.top_k, window_hours=args.window_hours)
+                                          top_k=args.top_k, window_hours=args.window_hours, now=batch_now)
                 except Exception as exc:
                     logger.error("topic=%s pipeline failed error_type=%s; continuing remaining topics",
                                  topic, type(exc).__name__)

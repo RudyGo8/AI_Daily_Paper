@@ -79,6 +79,7 @@ def test_topic_card_links_titles_under_categories_and_hides_scores():
     article.ranked_items = [first]
     payload = FeishuBotPublisher("", dry_run=True).build_card_payload(article)
     assert "Top 1" in payload["card"]["header"]["title"]["content"]
+    assert "截至" in payload["card"]["header"]["title"]["content"]
     text = payload["card"]["elements"][-1]["text"]["content"]
     assert "**模型发布**" in text
     assert "- [OpenAI releases new agentic model](https://example.com/openai-agent)" in text
@@ -129,6 +130,18 @@ def test_topic_card_does_not_render_stale_categories_when_selection_is_empty():
     payload = FeishuBotPublisher("", dry_run=True).build_card_payload(article)
     assert "今日暂无可推送的重点动态。" in str(payload)
     assert "openai-agent" not in str(payload)
+
+
+def test_topic_card_distinguishes_topic_filter_from_deduplication():
+    article = _build_article()
+    article.topic, article.display_name, article.emoji = "python", "Python / 开源技术", "🐍"
+    article.ranked_items = article.categories["模型发布"]
+    article.statistics = {"raw": 335, "within_window": 85, "topic_matched": 64,
+                          "after_dedup": 60, "history_filtered": 2}
+    payload = FeishuBotPublisher("", dry_run=True).build_card_payload(article)
+    note = payload["card"]["elements"][1]["elements"][0]["content"]
+    assert "时间筛选后 85 条，领域匹配后 64 条，合并去重后 60 条" in note
+    assert "过滤已推送 2 条，最终推荐 1 条" in note
 
 
 @pytest.mark.parametrize("one_category", [True, False])
