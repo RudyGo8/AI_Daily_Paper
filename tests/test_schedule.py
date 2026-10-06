@@ -20,3 +20,11 @@ def test_workflow_crons_match_topic_schedule_and_beijing_hours():
         assert 8 * 60 <= beijing <= 17 * 60
     with pytest.raises(ValueError):
         resolve_topic(config, "bad")
+
+
+def test_workflow_serializes_only_same_scheduled_topic():
+    root = Path(__file__).resolve().parents[1]
+    workflow = load_yaml(root / ".github/workflows/information-hub.yml")
+    group = workflow["concurrency"]["group"]
+    assert "github.event.schedule" in group
+    assert "github.event.inputs.topic" in group

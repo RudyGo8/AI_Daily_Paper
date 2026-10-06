@@ -47,7 +47,9 @@ permissions:
   contents: write
 
 concurrency:
-  group: information-hub-state
+  # A scheduled run is scoped to its cron (one topic); manual runs use their selected topic.
+  # Different topics can run on time instead of waiting behind another topic's network/LLM work.
+  group: information-hub-${{ github.event.schedule || github.event.inputs.topic || 'manual' }}
   cancel-in-progress: false
 
 jobs:
@@ -101,6 +103,7 @@ jobs:
           else
             topic="$INPUT_TOPIC"
           fi
+          echo "Run selection: event=${{ github.event_name }}, cron=${TRIGGER_CRON:-manual}, topic=$topic"
           args=(--topic "$topic")
           [[ -z "$INPUT_DATE" ]] || args+=(--date "$INPUT_DATE")
           [[ -z "$INPUT_TOP_K" ]] || args+=(--top-k "$INPUT_TOP_K")
