@@ -1,36 +1,36 @@
 topics:
   ai:
-    cron_utc: "0 1 * * *"
+    cron_utc: "0 0 * * *"
     display_name: AI / 大模型
     emoji: 🤖
-    top_k: 10
+    top_k: 5
     window_hours: 24
     min_keyword_matches: 1
     keywords: [AI, LLM, model, GPT, Claude, Gemini, DeepMind, Qwen, DeepSeek, GLM, Kimi, MiniMax, 大模型, 人工智能, 模型, 千问, 智谱, 多模态, 推理]
     important_keywords: [release, launch, benchmark, 发布, 升级, 开源, 降价]
   agent:
-    cron_utc: "0 2 * * *"
+    cron_utc: "0 0 * * *"
     display_name: Agent / Vibe Coding
     emoji: 🧠
-    top_k: 10
+    top_k: 5
     window_hours: 24
     min_keyword_matches: 1
     keywords: [agent, agents, agentic, MCP, RAG, Claude Code, Codex, Vibe Coding, Browser Use, Computer Use, LangGraph, LangChain, Dify, n8n, 智能体]
     important_keywords: [release, launch, 开源, 发布, upgrade]
     score_weights: {topic: 1.5}
   github:
-    cron_utc: "0 3 * * *"
+    cron_utc: "0 9 * * *"
     display_name: GitHub 热门项目
     emoji: 🔥
-    top_k: 10
+    top_k: 5
     window_hours: 24
     keywords: [AI, agent, agents, LLM, RAG, MCP, Python, developer, coding]
     score_weights: {freshness: 0.5, popularity: 1.5}
   python:
-    cron_utc: "0 4 * * *"
+    cron_utc: "0 9 * * *"
     display_name: Python / 开源技术
     emoji: 🐍
-    top_k: 10
+    top_k: 5
     window_hours: 24
     min_keyword_matches: 1
     keywords: [Python, FastAPI, Pydantic, uv, Ruff, pytest, Docker, OpenAPI, RAG, MCP, workflow, developer, 开源, 开发者]
@@ -39,7 +39,7 @@ topics:
     cron_utc: "0 0 * * *"
     display_name: 科技 / 社会重要新闻
     emoji: 📰
-    top_k: 10
+    top_k: 5
     window_hours: 24
     min_keyword_matches: 1
     keywords: [科技, 政策, 就业, 经济, 人工智能, AI, technology, science, economy, employment, policy, security, 安全, 民生, 灾害, 地震, 教育, 医疗, earthquake, disaster, health, regulation]
@@ -48,10 +48,10 @@ topics:
     important_keywords: [重大, 发布, 改革, 突破, security, regulation]
     score_weights: {source: 1.5, cross_source: 1.5}
   industry:
-    cron_utc: "30 7 * * *"
+    cron_utc: "0 0 * * *"
     display_name: 行业 / 公司动态
     emoji: 🏢
-    top_k: 10
+    top_k: 5
     window_hours: 24
     min_keyword_matches: 1
     exclude_title_keywords: [游戏, movie, trailer, 踏光而来, 限时优惠]
@@ -59,10 +59,10 @@ topics:
     watch_companies: [OpenAI, Anthropic, Google, NVIDIA, Apple, Microsoft, Meta, Garmin, 小米, 华为, 大疆, 美团]
     important_keywords: [IPO, 融资, 并购, 财报, acquisition, funding, earnings]
   qingdao_policy:
-    cron_utc: "0 6 * * *"
+    cron_utc: "0 9 * * *"
     display_name: 青岛政策 / 人才政策
     emoji: 🏙
-    top_k: 10
+    top_k: 5
     window_hours: 24
     min_keyword_matches: 1
     keywords: [人才, 住房, 就业, 落户, 补贴, 硕士, 科技, 创业, 城阳]
@@ -73,6 +73,6 @@ topics:
     cron_utc: "0 9 * * *"
     display_name: 自定义订阅
     emoji: ⭐
-    top_k: 10
+    top_k: 5
     window_hours: 24
     keywords: []

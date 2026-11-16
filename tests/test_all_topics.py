@@ -27,6 +27,23 @@ def test_all_topics_uses_one_batch_timestamp(monkeypatch, capsys):
     assert captured_times[0].tzinfo is timezone.utc
 
 
+def test_topic_list_uses_one_batch_timestamp(monkeypatch, capsys):
+    """A comma-separated topic batch runs every listed topic on one cutoff time."""
+    monkeypatch.setattr(sys, "argv", ["main", "--topic", "news,ai", "--dry-run"])
+    captured = []
+
+    def run(*args, **kwargs):
+        captured.append((kwargs["topic"], kwargs.get("now")))
+        return {"topic": kwargs["topic"], "feishu_result": {"enabled": False, "sent": False}}
+
+    monkeypatch.setattr(pipeline, "run_pipeline", run)
+    pipeline.main()
+    report = json.loads(capsys.readouterr().out)
+    assert [topic for topic, _ in captured] == ["news", "ai"]
+    assert len({now for _, now in captured}) == 1
+    assert [row["topic"] for row in report["reports"]] == ["news", "ai"]
+
+
 def test_all_topics_attempts_remaining_cards_after_failed_delivery(monkeypatch, capsys, tmp_path):
     monkeypatch.setattr(sys, "argv", ["main", "--topic", "all"])
     monkeypatch.setenv("FEISHU_ENABLED", "true")

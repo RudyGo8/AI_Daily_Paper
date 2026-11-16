@@ -167,7 +167,8 @@ def run_pipeline(target_date: date | None = None, dry_run: bool = True,
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Multi-topic Feishu information hub")
-    parser.add_argument("--topic", default="ai", help="Topic key from topics.yaml, or all for every topic (default: ai)")
+    parser.add_argument("--topic", default="ai",
+                        help="Topic key from topics.yaml, a comma-separated list, or all (default: ai)")
     parser.add_argument("--top-k", type=int, default=None, help="Number of ranked items")
     parser.add_argument("--window-hours", type=float, default=None, help="Rolling window length")
     parser.add_argument("--date", default=None, help="Debug a natural day: YYYY-MM-DD")
@@ -190,10 +191,13 @@ def main() -> None:
             raise ValueError("top_k must be positive")
         if args.window_hours is not None and not 0 < args.window_hours < float("inf"):
             raise ValueError("window_hours must be positive and finite")
-        if args.topic == "all":
+        if args.topic == "all" or "," in args.topic:
             settings = load_settings()
             config = load_yaml(settings.topics_file)
-            topics = list(config.get("topics", {}))
+            if args.topic == "all":
+                topics = list(config.get("topics", {}))
+            else:
+                topics = [name.strip() for name in args.topic.split(",") if name.strip()]
             if not topics:
                 raise ValueError("No topics configured")
             # Validate every topic before starting delivery.
@@ -213,7 +217,7 @@ def main() -> None:
                     result = {"topic": topic, "error_type": type(exc).__name__,
                               "feishu_result": {"enabled": settings.feishu_enabled, "sent": False}}
                 reports.append(result)
-            report = {"topic": "all", "reports": reports}
+            report = {"topic": args.topic, "reports": reports}
         else:
             report = run_pipeline(target_date, args.dry_run, args.max_items, topic=args.topic,
                                   top_k=args.top_k, window_hours=args.window_hours)

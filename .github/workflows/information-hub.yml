@@ -3,13 +3,8 @@ run-name: ${{ github.event_name == 'workflow_dispatch' && format('{0} · {1}', i
 
 on:
   schedule:
+    # Two batches per day in Beijing time: 08:00 and 17:00. Each cron runs its topic group.
     - cron: "0 0 * * *"
-    - cron: "0 1 * * *"
-    - cron: "0 2 * * *"
-    - cron: "0 3 * * *"
-    - cron: "0 4 * * *"
-    - cron: "0 6 * * *"
-    - cron: "30 7 * * *"
     - cron: "0 9 * * *"
   workflow_dispatch:
     inputs:
@@ -47,8 +42,8 @@ permissions:
   contents: write
 
 concurrency:
-  # A scheduled run is scoped to its cron (one topic); manual runs use their selected topic.
-  # Different topics can run on time instead of waiting behind another topic's network/LLM work.
+  # A scheduled run is scoped to its cron batch (several topics); manual runs use their selected topic.
+  # Different batches can run on time instead of waiting behind another batch's network/LLM work.
   group: information-hub-${{ github.event.schedule || github.event.inputs.topic || 'manual' }}
   cancel-in-progress: false
 
@@ -99,12 +94,12 @@ jobs:
         shell: bash
         run: |
           if [[ -n "$TRIGGER_CRON" ]]; then
-            topic=$(uv run python -m src.schedule --cron "$TRIGGER_CRON")
+            topics=$(uv run python -m src.schedule --cron "$TRIGGER_CRON")
           else
-            topic="$INPUT_TOPIC"
+            topics="$INPUT_TOPIC"
           fi
-          echo "Run selection: event=${{ github.event_name }}, cron=${TRIGGER_CRON:-manual}, topic=$topic"
-          args=(--topic "$topic")
+          echo "Run selection: event=${{ github.event_name }}, cron=${TRIGGER_CRON:-manual}, topics=$topics"
+          args=(--topic "$topics")
           [[ -z "$INPUT_DATE" ]] || args+=(--date "$INPUT_DATE")
           [[ -z "$INPUT_TOP_K" ]] || args+=(--top-k "$INPUT_TOP_K")
           [[ -z "$INPUT_WINDOW" ]] || args+=(--window-hours "$INPUT_WINDOW")

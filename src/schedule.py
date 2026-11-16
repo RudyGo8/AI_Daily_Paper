@@ -1,4 +1,4 @@
-"""Resolve a triggering cron from configuration, never the runner's wall clock."""
+"""Resolve the triggering cron to its topic group, never the runner's wall clock."""
 from __future__ import annotations
 
 import argparse
@@ -6,11 +6,12 @@ import argparse
 from src.config import load_settings, load_yaml
 
 
-def resolve_topic(config: dict, cron: str) -> str:
-    for name, row in config.get("topics", {}).items():
-        if row.get("cron_utc") == cron:
-            return name
-    raise ValueError(f"No topic configured for cron={cron!r}")
+def resolve_topics(config: dict, cron: str) -> list[str]:
+    """Return every topic that shares this cron, in configuration order."""
+    topics = [name for name, row in config.get("topics", {}).items() if row.get("cron_utc") == cron]
+    if not topics:
+        raise ValueError(f"No topic configured for cron={cron!r}")
+    return topics
 
 
 def main() -> None:
@@ -18,7 +19,7 @@ def main() -> None:
     parser.add_argument("--cron", required=True)
     args = parser.parse_args()
     try:
-        print(resolve_topic(load_yaml(load_settings().topics_file), args.cron))
+        print(",".join(resolve_topics(load_yaml(load_settings().topics_file), args.cron)))
     except ValueError as exc:
         parser.error(str(exc))
 
