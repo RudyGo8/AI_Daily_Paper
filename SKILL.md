@@ -33,7 +33,7 @@ cp .env.example .env          # 手动等价：生成配置文件
 ./run.sh --topic ai                      # 非主分支自动预览
 ./run.sh --topic all --dry-run           # 一次预览全部 Topic
 ./run.sh --topic github --date 2026-08-17 --dry-run
-./run.sh --topic qingdao_policy --window-hours 168 --dry-run
+./run.sh --topic github --window-hours 48 --dry-run
 ./run.sh --topic ai --top-k 5 --dry-run
 ```
 
@@ -96,10 +96,10 @@ git log origin/information-hub-data -5 --oneline
 ## Topic 与 Cron
 
 ```bash
-uv run python -m src.schedule --cron "0 0 * * *"    # 该批次的 Topic 组（逗号分隔）
+uv run python -m src.schedule --cron "0 2 * * *"    # 该批次的 Topic 组（逗号分隔）
 ```
 
-`configs/topics.yaml` 的 `cron_utc` 决定 Topic 属于哪一批：一天两档（北京时间 08:00 / 17:00），同一 cron 的 Topic 在同一次 Actions 中依次播报，共用一个采集截止时间。Topic 显示名、`top_k`、`window_hours`、关键词、权重都在该文件；源与绑定的 Topic 在 `configs/sources.yaml`。新增 Topic 会自动加入 `--topic all`；要让它参与定时播报，需把 `cron_utc` 设为某一批的 cron，并同步 `.github/workflows/information-hub.yml` 的 `schedule` 与 `options`（测试会校验两边一致）。
+`configs/topics.yaml` 的 `cron_utc` 决定 Topic 属于哪一批：每天一次（北京时间 10:00），同一 cron 的 Topic 在同一次 Actions 中依次播报，共用一个采集截止时间。Topic 显示名、`top_k`、`window_hours`、关键词、权重都在该文件；源与绑定的 Topic 在 `configs/sources.yaml`。新增 Topic 会自动加入 `--topic all`；要让它参与定时播报，需把 `cron_utc` 设为某一批的 cron，并同步 `.github/workflows/information-hub.yml` 的 `schedule` 与 `options`（测试会校验两边一致）。
 
 ## 常见排查
 

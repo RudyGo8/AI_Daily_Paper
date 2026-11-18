@@ -19,7 +19,7 @@ def response(html, url="https://official.example/list/"):
 
 def source(**options):
     return RSSSource("Official", "https://official.example/list/", "webpage",
-                     ["qingdao_policy"], 5, {
+                     ["policy"], 5, {
                          "selectors": {"item": "li", "link": "a", "title": ".title",
                                        "date": "time", "summary": ".summary"},
                          **options,
@@ -34,14 +34,14 @@ def row(title="Policy", date="2026-10-04", href="../policy.html", summary="Listi
 @patch("src.fetchers.webpage_fetcher.requests.get")
 def test_listing_extracts_real_dates_relative_links_and_topic(get):
     get.return_value = response(row())
-    items = WebpageFetcher(timeout=7).fetch_source(source(), "qingdao_policy")
+    items = WebpageFetcher(timeout=7).fetch_source(source(), "policy")
     assert len(items) == 1
     item = items[0]
     assert item.title == "Policy"
     assert item.link == "https://official.example/policy.html"
     assert item.published_at == datetime(2026, 10, 3, 16, tzinfo=timezone.utc)
     assert item.summary == "Listing summary"
-    assert (item.topic, item.source_type, item.source_weight) == ("qingdao_policy", "webpage", 5)
+    assert (item.topic, item.source_type, item.source_weight) == ("policy", "webpage", 5)
     assert get.call_args.kwargs["timeout"] == 7
 
 
@@ -49,7 +49,7 @@ def test_listing_extracts_real_dates_relative_links_and_topic(get):
 def test_bad_rows_do_not_hide_later_healthy_rows(get):
     get.return_value = response(row(date="not-a-date") + row(title="", date="2026-10-04")
                                   + row(href="javascript:alert(1)") + row("Healthy"))
-    items = WebpageFetcher().fetch_source(source(), "qingdao_policy")
+    items = WebpageFetcher().fetch_source(source(), "policy")
     assert [item.title for item in items] == ["Healthy"]
 
 
@@ -72,7 +72,7 @@ def test_detail_requests_are_bounded_and_only_fetch_known_dates_in_window(get):
     detail = '<main><p>Eligible graduates receive a housing allowance.</p><p>Apply before October 20.</p></main>'
     get.side_effect = [response(listing), response(detail)]
     items = WebpageFetcher().fetch_source(source(detail_selectors={"content": "main"},
-                                               max_detail_items=1), "qingdao_policy",
+                                               max_detail_items=1), "policy",
                                           since=datetime(2026, 10, 3, 12, tzinfo=timezone.utc),
                                           now=datetime(2026, 10, 4, 12, tzinfo=timezone.utc))
     assert [item.title for item in items] == ["Old", "Current", "Second"]
@@ -187,13 +187,13 @@ def test_policy_pipeline_reports_25_raw_items_and_zero_in_window(get, monkeypatc
     get.return_value = response(listing)
     policy_source = source(detail_selectors={"content": "main", "date": "time"})
     end = datetime(2026, 10, 5, 6, tzinfo=timezone.utc)
-    items = WebpageFetcher().fetch_source(policy_source, "qingdao_policy",
+    items = WebpageFetcher().fetch_source(policy_source, "policy",
                                           since=datetime(2026, 10, 4, 6, tzinfo=timezone.utc), now=end)
     assert len(items) == 25
     assert all(item.content == "" for item in items)
     monkeypatch.setattr("src.main.SourceManager.from_config", lambda *args, **kwargs: SourceManager([policy_source]))
     monkeypatch.setenv("HISTORY_ENABLED", "false")
-    result = run_pipeline(topic="qingdao_policy", dry_run=True, now=end)
+    result = run_pipeline(topic="ai", dry_run=True, now=end)
     assert result["statistics"]["raw"] == 25
     assert result["statistics"]["within_window"] == 0
     assert result["total_processed_items"] == 0

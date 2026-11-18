@@ -35,7 +35,7 @@ def test_no_sources_produces_clear_empty_preview(monkeypatch, tmp_path):
     monkeypatch.setattr("src.main.load_yaml", lambda path: {"sources": []} if path == settings.sources_file else original(path))
     monkeypatch.setenv("LOAD_DOTENV", "false")
     monkeypatch.setenv("HISTORY_DIR", str(tmp_path))
-    result = run_pipeline(topic="custom", dry_run=True)
+    result = run_pipeline(topic="ai", dry_run=True)
     assert result["sources"] == result["total_processed_items"] == 0
     assert result["feishu_result"]["preview"]["card"]["header"]["title"]["content"].find("Top 0") >= 0
 
@@ -113,7 +113,7 @@ def test_date_mode_fetches_details_at_local_midnight(monkeypatch):
         captured.update(kwargs)
         return []
     monkeypatch.setattr("src.main.SourceManager.fetch_all", fetch)
-    report = run_pipeline(date(2026, 10, 4), topic="qingdao_policy", window_hours=48, dry_run=True)
+    report = run_pipeline(date(2026, 10, 4), topic="github", window_hours=48, dry_run=True)
     midnight = datetime(2026, 10, 3, 16, tzinfo=timezone.utc)
     assert captured["since"] < midnight
     assert captured["now"] < midnight + timedelta(days=1)

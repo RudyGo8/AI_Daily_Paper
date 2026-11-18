@@ -3,9 +3,8 @@ run-name: ${{ github.event_name == 'workflow_dispatch' && format('{0} · {1}', i
 
 on:
   schedule:
-    # Two batches per day in Beijing time: 08:00 and 17:00. Each cron runs its topic group.
-    - cron: "0 0 * * *"
-    - cron: "0 9 * * *"
+    # One batch per day in Beijing time: 10:00, all topics run in the same job.
+    - cron: "0 2 * * *"
   workflow_dispatch:
     inputs:
       topic:
@@ -18,11 +17,6 @@ on:
           - ai
           - agent
           - github
-          - python
-          - news
-          - qingdao_policy
-          - industry
-          - custom
       target_date:
         description: Optional natural day for debugging (YYYY-MM-DD)
         type: string

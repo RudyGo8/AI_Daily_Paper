@@ -22,14 +22,14 @@ def test_all_topics_uses_one_batch_timestamp(monkeypatch, capsys):
     monkeypatch.setattr(pipeline, "run_pipeline", run)
     pipeline.main()
     json.loads(capsys.readouterr().out)
-    assert len(captured_times) == 8
+    assert len(captured_times) == 3
     assert len(set(captured_times)) == 1
     assert captured_times[0].tzinfo is timezone.utc
 
 
 def test_topic_list_uses_one_batch_timestamp(monkeypatch, capsys):
     """A comma-separated topic batch runs every listed topic on one cutoff time."""
-    monkeypatch.setattr(sys, "argv", ["main", "--topic", "news,ai", "--dry-run"])
+    monkeypatch.setattr(sys, "argv", ["main", "--topic", "ai,agent", "--dry-run"])
     captured = []
 
     def run(*args, **kwargs):
@@ -39,9 +39,9 @@ def test_topic_list_uses_one_batch_timestamp(monkeypatch, capsys):
     monkeypatch.setattr(pipeline, "run_pipeline", run)
     pipeline.main()
     report = json.loads(capsys.readouterr().out)
-    assert [topic for topic, _ in captured] == ["news", "ai"]
+    assert [topic for topic, _ in captured] == ["ai", "agent"]
     assert len({now for _, now in captured}) == 1
-    assert [row["topic"] for row in report["reports"]] == ["news", "ai"]
+    assert [row["topic"] for row in report["reports"]] == ["ai", "agent"]
 
 
 def test_all_topics_attempts_remaining_cards_after_failed_delivery(monkeypatch, capsys, tmp_path):
@@ -63,11 +63,11 @@ def test_all_topics_attempts_remaining_cards_after_failed_delivery(monkeypatch, 
     report = json.loads(capsys.readouterr().out)
     assert report["topic"] == "all"
     results = {r["topic"]: r for r in report["reports"]}
-    assert set(results) == {"ai", "agent", "github", "python", "news", "qingdao_policy", "industry", "custom"}
+    assert set(results) == {"ai", "agent", "github"}
     assert results["ai"]["feishu_result"]["sent"] is False
     assert all(r["feishu_result"]["sent"] for key, r in results.items() if key != "ai")
     assert not (tmp_path / "ai.json").exists()
-    assert (tmp_path / "custom.json").exists()
+    assert (tmp_path / "github.json").exists()
 
 
 def test_all_topics_isolates_unexpected_topic_failure(monkeypatch, capsys):
@@ -86,8 +86,8 @@ def test_all_topics_isolates_unexpected_topic_failure(monkeypatch, capsys):
     assert error.value.code == 1
     captured = capsys.readouterr()
     report = json.loads(captured.out)
-    assert len(report["reports"]) == 8
+    assert len(report["reports"]) == 3
     assert report["reports"][0]["topic"] == "ai"
     assert report["reports"][0]["error_type"] == "RuntimeError"
-    assert report["reports"][-1]["topic"] == "custom"
+    assert report["reports"][-1]["topic"] == "github"
     assert "private failure text" not in captured.out + captured.err

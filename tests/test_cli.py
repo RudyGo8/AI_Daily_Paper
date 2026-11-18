@@ -7,7 +7,7 @@ import sys
 import pytest
 
 
-@pytest.mark.parametrize("topic", ["qingdao_policy", "all"])
+@pytest.mark.parametrize("topic", ["github", "all"])
 def test_cli_utf8_output_even_when_windows_encoding_is_ascii(tmp_path, topic):
     root = Path(__file__).resolve().parents[1]
     configs = tmp_path / "configs"
@@ -24,9 +24,11 @@ def test_cli_utf8_output_even_when_windows_encoding_is_ascii(tmp_path, topic):
     assert report["topic"] == topic
     reports = report["reports"] if topic == "all" else [report]
     if topic == "all":
-        assert {r["topic"] for r in reports} == {"ai", "agent", "github", "python", "news", "qingdao_policy", "industry", "custom"}
-        assert len(reports) == 8
+        assert {r["topic"] for r in reports} == {"ai", "agent", "github"}
+        assert len(reports) == 3
         assert all(r["feishu_result"]["sent"] is False for r in reports)
         assert all(r["history_saved"] is False for r in reports)
-    policy = next(r for r in reports if r["topic"] == "qingdao_policy")
-    assert "🏙" in policy["feishu_result"]["preview"]["card"]["header"]["title"]["content"]
+    emoji = {"ai": "🤖", "agent": "🧠", "github": "🔥"}
+    for row in reports:
+        header = row["feishu_result"]["preview"]["card"]["header"]["title"]["content"]
+        assert emoji[row["topic"]] in header
